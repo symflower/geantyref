@@ -43,7 +43,7 @@ All functionality of the library is exposed via a handful of classes:
 
 * `GenericTypeReflector` : contains static methods used for generic type analysis
 * `TypeFactory` : contains static methods used for `Type/AnnotatedType` instance creation
-* `TypeToken` : Used to create `Type/AnnotatedType` literals (using [THC pattern](http://gafter.blogspot.nl/2006/12/super-type-tokens.html))
+* `TypeToken` : Used to create `Type/AnnotatedType` literals (using [THC pattern](http://gafter.blogspot.com/2006/12/super-type-tokens.html))
 
 ## Usage
 
@@ -163,7 +163,7 @@ work with `AnnotatedType`s.
 
 This approach, known as _Typesafe Heterogenous Container_ (THC) or _type token_, is widely used
 in libraries like Jackson or Gson that need to work with generic types. There are various sources
-describing the intricacies of this approach, [Neal Gafter's blog](http://gafter.blogspot.nl/2006/12/super-type-tokens.html) being a classic one.
+describing the intricacies of this approach, [Neal Gafter's blog](http://gafter.blogspot.com/2006/12/super-type-tokens.html) being a classic one.
 
 To obtain a `Type` instance representing a know generic type, such as `List<String>` it is enough to
 do the following:

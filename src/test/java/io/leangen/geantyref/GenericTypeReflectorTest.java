@@ -5,6 +5,8 @@
 
 package io.leangen.geantyref;
 
+import org.junit.Test;
+
 import static io.leangen.geantyref.Annotations.A1;
 import static io.leangen.geantyref.Annotations.A2;
 import static io.leangen.geantyref.Annotations.A3;
@@ -17,6 +19,7 @@ import static io.leangen.geantyref.GenericTypeReflector.resolveType;
 import static org.junit.Assert.assertArrayEquals;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.AnnotatedParameterizedType;
@@ -26,7 +29,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -226,6 +228,12 @@ public class GenericTypeReflectorTest extends AbstractGenericsReflectorTest {
         assertAnnotationsPresent(innermostCanonical, A2.class);
     }
 
+    public void testCaptureErasure() throws NoSuchFieldException {
+        Type wildcard = GenericTypeReflector.addWildcardParameters(Capture.class);
+        Type captureType = GenericTypeReflector.getExactFieldType(Capture.class.getField("t"), wildcard);
+        assertEquals(String.class, GenericTypeReflector.erase(captureType));
+    }
+
     @SafeVarargs
     private static void assertAnnotationsPresent(AnnotatedType type, Class<? extends Annotation>... annotations) {
         assertArrayEquals(annotations, Arrays.stream(type.getAnnotations()).map(Annotation::annotationType).toArray());
@@ -246,6 +254,7 @@ public class GenericTypeReflectorTest extends AbstractGenericsReflectorTest {
         default Map<@A2 T, @A3 S> partiallyResolvable() { return null; }
     }
     private static class W<T> implements O<String, T> {}
+    private static class Capture<T extends String & Serializable> {public T t;}
 
     private static AnnotatedType t1 = new TypeToken<@A1 Optional<@A2 Map<@A3 String, @A4 Integer @A5 []>>>(){}.getAnnotatedType();
     private static AnnotatedType t2 = new TypeToken<@A5 Optional<@A4 Map<@A2 String, @A3 Integer @A1 []>>>(){}.getAnnotatedType();

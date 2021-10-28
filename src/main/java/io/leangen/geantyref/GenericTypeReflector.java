@@ -83,6 +83,10 @@ public class GenericTypeReflector {
             WildcardType wildcardType = (WildcardType) type;
             Type[] lowerBounds = wildcardType.getLowerBounds();
             return erase(lowerBounds.length > 0 ? lowerBounds[0] : wildcardType.getUpperBounds()[0]);
+        } else if (type instanceof CaptureType) {
+            CaptureType captureType = (CaptureType) type;
+            Type[] lowerBounds = captureType.getLowerBounds();
+            return erase(lowerBounds.length > 0 ? lowerBounds[0] : captureType.getUpperBounds()[0]);
         } else {
             throw new RuntimeException("not supported: " + type.getClass());
         }

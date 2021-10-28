@@ -1,10 +1,9 @@
-# GeAnTyRef
+# GeantyRef
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.leangen.geantyref/geantyref/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.leangen.geantyref/geantyref)
-[![Javadoc](http://javadoc-badge.appspot.com/io.leangen.geantyref/geantyref.svg?label=javadoc)](http://www.javadoc.io/doc/io.leangen.geantyref/geantyref)
-[![Build Status](https://travis-ci.org/leangen/geantyref.svg?branch=master)](https://travis-ci.org/leangen/geantyref)
-[![Hex.pm](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000)](https://raw.githubusercontent.com/leangen/geantyref/master/LICENSE)
-[![Semver](http://img.shields.io/SemVer/2.0.0.png)](http://semver.org/spec/v2.0.0.html)
+[![Maven Central](https://img.shields.io/maven-central/v/io.leangen.geantyref/geantyref?color=green&style=flat-square)](https://maven-badges.herokuapp.com/maven-central/io.leangen.geantyref/geantyref)
+[![Javadoc](https://img.shields.io/badge/dynamic/json.svg?style=flat-square&prefix=v&color=green&label=javadoc&query=$.response.docs[0].latestVersion&uri=http%3A%2F%2Fsearch.maven.org%2Fsolrsearch%2Fselect%3Fq%3Dg%3A%2522io.leangen.geantyref%2522%2BAND%2Ba%3A%2522geantyref%2522%26wt%3Djson)](http://www.javadoc.io/doc/io.leangen.geantyref/geantyref)
+[![Build Status](https://img.shields.io/travis/leangen/geantyref?style=flat-square)](https://travis-ci.org/leangen/geantyref)
+[![License](https://img.shields.io/github/license/leangen/geantyref.svg?style=flat-square)](https://raw.githubusercontent.com/leangen/geantyref/master/LICENSE)
 
 A fork of the excellent [GenTyRef](https://code.google.com/archive/p/gentyref/) library, adding support for working with [AnnotatedTypes](https://jaxenter.com/jsr-308-explained-java-type-annotations-107706.html) introduced in Java 8 plus many nifty features.
 
@@ -53,13 +52,13 @@ All functionality of the library is exposed via a handful of classes:
 <dependency>
     <groupId>io.leangen.geantyref</groupId>
     <artifactId>geantyref</artifactId>
-    <version>1.3.4</version>
+    <version>1.3.12</version>
 </dependency>
 ```
 
 ### Other build tools:
 
-You can find instructions at [maven.org](https://search.maven.org/#artifactdetails%7Cio.leangen.geantyref%7Cgeantyref%7C1.3.4%7Cjar)
+You can find instructions at [maven.org](https://search.maven.org/#artifactdetails%7Cio.leangen.geantyref%7Cgeantyref%7C1.3.12%7Cjar)
 
 ## Examples
 

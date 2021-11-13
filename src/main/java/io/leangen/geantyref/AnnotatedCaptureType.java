@@ -12,7 +12,7 @@ import java.lang.reflect.AnnotatedWildcardType;
 /**
  * Annotated equivalent of {@link CaptureType}
  */
-interface AnnotatedCaptureType extends AnnotatedType {
+public interface AnnotatedCaptureType extends AnnotatedType {
 
     AnnotatedType[] getAnnotatedUpperBounds();
 

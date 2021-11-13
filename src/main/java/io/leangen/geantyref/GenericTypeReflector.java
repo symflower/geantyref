@@ -5,8 +5,6 @@
 
 package io.leangen.geantyref;
 
-import static java.util.Arrays.stream;
-
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedArrayType;
@@ -34,6 +32,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
+
+import static java.util.Arrays.stream;
 
 /**
  * Utility class for doing reflection on types.
@@ -1057,8 +1057,8 @@ public class GenericTypeReflector {
 
     /**
      * This is the method underlying {@link #toCanonical(AnnotatedType)}.
-     * If goes recursively through the structure of the provided {@link AnnotatedType} turning all type parameters,
-     * bounds etc encountered into their canonical forms, with a special treatment for {@link AnnotatedCaptureType}
+     * It recursively traverses the structure of the provided {@link AnnotatedType} turning all type parameters,
+     * bounds etc. into their canonical forms, with a special treatment for {@link AnnotatedCaptureType}
      * which can have infinitely recursive structure by having itself as its upper bound.
      *
      * @param type The type to annotate
@@ -1112,6 +1112,14 @@ public class GenericTypeReflector {
         });
     }
 
+    /**
+     * Recursively applies a transformation implemented by the provided {@code TypeVisitor}
+     * to the structure of the given type.
+     *
+     * @param type The type to transform
+     * @param visitor Visitor implementing the transformation
+     * @return Type produced by recursively applying the transformation to the given type
+     */
     public static AnnotatedType transform(AnnotatedType type, TypeVisitor visitor) {
         if (type instanceof AnnotatedParameterizedType) {
             return visitor.visitParameterizedType((AnnotatedParameterizedType) type);
@@ -1132,6 +1140,37 @@ public class GenericTypeReflector {
             return visitor.visitClass(type);
         }
         return visitor.visitUnmatched(type);
+    }
+
+    /**
+     * Recursively traverses the structure of the given type, reducing all bounded types
+     * ({@link AnnotatedTypeVariable}, {@link AnnotatedWildcardType} and {@link AnnotatedCaptureType})
+     * to their first bound.
+     *
+     * @param type The type to transform
+     * @return Type produced by recursively reducing bounded types within the structure of the given type
+     */
+    public static AnnotatedType reduceBounded(AnnotatedType type) {
+        return transform(capture(type), new TypeVisitor() {
+            @Override
+            protected AnnotatedType visitVariable(final AnnotatedTypeVariable type) {
+                return updateAnnotations(transform(type.getAnnotatedBounds()[0], this), type.getAnnotations());
+            }
+
+            @Override
+            protected AnnotatedType visitWildcardType(AnnotatedWildcardType type) {
+                return type.getAnnotatedLowerBounds().length > 0
+                        ? updateAnnotations(transform(type.getAnnotatedLowerBounds()[0], this), type.getAnnotations())
+                        : updateAnnotations(transform(type.getAnnotatedUpperBounds()[0],this), type.getAnnotations());
+            }
+
+            @Override
+            protected AnnotatedType visitCaptureType(AnnotatedCaptureType type) {
+                return type.getAnnotatedLowerBounds().length > 0
+                        ? updateAnnotations(transform(type.getAnnotatedLowerBounds()[0], this), type.getAnnotations())
+                        : updateAnnotations(transform(type.getAnnotatedUpperBounds()[0], this), type.getAnnotations());
+            }
+        });
     }
 
     private static AnnotatedParameterizedType expandClassGenerics(Class<?> type) {

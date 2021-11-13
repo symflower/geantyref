@@ -5,20 +5,7 @@
 
 package io.leangen.geantyref;
 
-import org.junit.Test;
-
-import static io.leangen.geantyref.Annotations.A1;
-import static io.leangen.geantyref.Annotations.A2;
-import static io.leangen.geantyref.Annotations.A3;
-import static io.leangen.geantyref.Annotations.A4;
-import static io.leangen.geantyref.Annotations.A5;
-import static io.leangen.geantyref.GenericTypeReflector.annotate;
-import static io.leangen.geantyref.GenericTypeReflector.getExactSubType;
-import static io.leangen.geantyref.GenericTypeReflector.resolveExactType;
-import static io.leangen.geantyref.GenericTypeReflector.resolveType;
-import static org.junit.Assert.assertArrayEquals;
-
-import java.awt.*;
+import java.awt.Dimension;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedArrayType;
@@ -36,6 +23,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
+import static io.leangen.geantyref.Annotations.A1;
+import static io.leangen.geantyref.Annotations.A2;
+import static io.leangen.geantyref.Annotations.A3;
+import static io.leangen.geantyref.Annotations.A4;
+import static io.leangen.geantyref.Annotations.A5;
+import static io.leangen.geantyref.GenericTypeReflector.annotate;
+import static io.leangen.geantyref.GenericTypeReflector.getExactSubType;
+import static io.leangen.geantyref.GenericTypeReflector.resolveExactType;
+import static io.leangen.geantyref.GenericTypeReflector.resolveType;
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Test for reflection done in GenericTypeReflector.
@@ -228,10 +226,17 @@ public class GenericTypeReflectorTest extends AbstractGenericsReflectorTest {
         assertAnnotationsPresent(innermostCanonical, A2.class);
     }
 
-    public void testCaptureErasure() throws NoSuchFieldException {
-        Type wildcard = GenericTypeReflector.addWildcardParameters(Capture.class);
-        Type captureType = GenericTypeReflector.getExactFieldType(Capture.class.getField("t"), wildcard);
-        assertEquals(String.class, GenericTypeReflector.erase(captureType));
+    public void testErasure() throws NoSuchFieldException {
+        Type wildcard = GenericTypeReflector.addWildcardParameters(ComplexBounds.class);
+        Type captureType = GenericTypeReflector.getExactFieldType(ComplexBounds.class.getField("u"), wildcard);
+        assertEquals(Number.class, GenericTypeReflector.erase(captureType));
+    }
+
+    public void testReduceBounded() {
+        AnnotatedType t = new TypeToken<ComplexBounds<Long, ?>>(){}.getAnnotatedType();
+        AnnotatedParameterizedType reduced = (AnnotatedParameterizedType) GenericTypeReflector.reduceBounded(t);
+        assertEquals(Long.class, reduced.getAnnotatedActualTypeArguments()[0].getType());
+        assertEquals(Long.class, reduced.getAnnotatedActualTypeArguments()[1].getType());
     }
 
     @SafeVarargs
@@ -254,7 +259,7 @@ public class GenericTypeReflectorTest extends AbstractGenericsReflectorTest {
         default Map<@A2 T, @A3 S> partiallyResolvable() { return null; }
     }
     private static class W<T> implements O<String, T> {}
-    private static class Capture<T extends String & Serializable> {public T t;}
+    private static class ComplexBounds<T extends Number & Serializable, U extends T> {public U u;}
 
     private static AnnotatedType t1 = new TypeToken<@A1 Optional<@A2 Map<@A3 String, @A4 Integer @A5 []>>>(){}.getAnnotatedType();
     private static AnnotatedType t2 = new TypeToken<@A5 Optional<@A4 Map<@A2 String, @A3 Integer @A1 []>>>(){}.getAnnotatedType();

@@ -70,15 +70,19 @@ public abstract class TypeVisitor {
 		if (captureCache.containsKey(key)) {
 			return captureCache.get(key);
 		}
-		AnnotatedCaptureType annotatedCapture = new AnnotatedCaptureTypeImpl((CaptureType) type.getType(),
-				(AnnotatedWildcardType) transform(type.getAnnotatedWildcardType(), this),
-				(AnnotatedTypeVariable) transform(type.getAnnotatedTypeVariable(), this),
-				null, type.getAnnotations());
-		captureCache.put(key, annotatedCapture);
+		AnnotatedType[] lowerBounds = type.getAnnotatedLowerBounds();
+		if (lowerBounds != null)  {
+			lowerBounds = Arrays.stream(lowerBounds)
+					.map(bound -> transform(bound, this))
+					.toArray(AnnotatedType[]::new);
+		}
 		AnnotatedType[] upperBounds = Arrays.stream(type.getAnnotatedUpperBounds())
 				.map(bound -> transform(bound, this))
 				.toArray(AnnotatedType[]::new);
-		annotatedCapture.setAnnotatedUpperBounds(upperBounds); //complete the type
+		AnnotatedCaptureType annotatedCapture = new AnnotatedCaptureTypeImpl((CaptureType) type.getType(),
+				type.getAnnotatedWildcardType(), type.getAnnotatedTypeVariable(),
+				lowerBounds, upperBounds, type.getAnnotations());
+		captureCache.put(key, annotatedCapture);
 		return annotatedCapture;
 	}
 

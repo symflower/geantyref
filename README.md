@@ -52,13 +52,13 @@ All functionality of the library is exposed via a handful of classes:
 <dependency>
     <groupId>io.leangen.geantyref</groupId>
     <artifactId>geantyref</artifactId>
-    <version>1.3.12</version>
+    <version>1.3.13</version>
 </dependency>
 ```
 
 ### Other build tools:
 
-You can find instructions at [maven.org](https://search.maven.org/#artifactdetails%7Cio.leangen.geantyref%7Cgeantyref%7C1.3.12%7Cjar)
+You can find instructions at [maven.org](https://search.maven.org/#artifactdetails%7Cio.leangen.geantyref%7Cgeantyref%7C1.3.13%7Cjar)
 
 ## Examples
 

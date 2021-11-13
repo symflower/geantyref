@@ -5,8 +5,6 @@
 
 package io.leangen.geantyref;
 
-import static java.util.Arrays.stream;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.AnnotatedTypeVariable;
@@ -17,9 +15,9 @@ import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.Arrays.stream;
 
 class AnnotatedCaptureTypeImpl extends AnnotatedTypeImpl implements AnnotatedCaptureType {
 
@@ -39,11 +37,16 @@ class AnnotatedCaptureTypeImpl extends AnnotatedTypeImpl implements AnnotatedCap
     }
 
     AnnotatedCaptureTypeImpl(CaptureType type, AnnotatedWildcardType wildcard, AnnotatedTypeVariable variable, AnnotatedType[] upperBounds, Annotation[] annotations) {
+        this(type, wildcard, variable, wildcard.getAnnotatedLowerBounds(), upperBounds, annotations);
+    }
+
+    AnnotatedCaptureTypeImpl(CaptureType type, AnnotatedWildcardType wildcard, AnnotatedTypeVariable variable,
+                             AnnotatedType[] lowerBounds, AnnotatedType[] upperBounds, Annotation[] annotations) {
         super(type, annotations != null ? annotations : Stream.concat(stream(wildcard.getAnnotations()), stream(variable.getAnnotations())).toArray(Annotation[]::new));
         this.type = type;
         this.wildcard = wildcard;
         this.variable = variable;
-        this.lowerBounds = wildcard.getAnnotatedLowerBounds();
+        this.lowerBounds = lowerBounds;
         this.upperBounds = upperBounds;
         this.declaredAnnotations = Stream.concat(
                 Arrays.stream(wildcard.getDeclaredAnnotations()),

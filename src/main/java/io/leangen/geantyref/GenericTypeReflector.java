@@ -41,7 +41,7 @@ import static java.util.Arrays.stream;
  * @author Wouter Coekaerts {@literal (wouter@coekaerts.be)}
  * @author Bojan Tomic {@literal (veggen@gmail.com)}
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class GenericTypeReflector {
 
     private static final WildcardType UNBOUND_WILDCARD = new WildcardTypeImpl(new Type[]{Object.class}, new Type[]{});
@@ -98,6 +98,11 @@ public class GenericTypeReflector {
         return boxed != null ? boxed : type;
     }
 
+    @SuppressWarnings("SuspiciousMethodCalls")
+    public static boolean isBoxType(Type type) {
+        return BOX_TYPES.containsValue(type);
+    }
+
     public static boolean isFullyBound(Type type) {
         if (type instanceof Class) {
             return true;
@@ -130,7 +135,7 @@ public class GenericTypeReflector {
             while(handlingTypeAndParams instanceof AnnotatedParameterizedType) {
                 AnnotatedParameterizedType pType = (AnnotatedParameterizedType)handlingTypeAndParams;
                 Class<?> clazz = (Class<?>)((ParameterizedType) pType.getType()).getRawType(); // getRawType should always be Class
-                TypeVariable[] vars = clazz.getTypeParameters();
+                TypeVariable<?>[] vars = clazz.getTypeParameters();
                 varMap.addAll(vars, pType.getAnnotatedActualTypeArguments());
                 Type owner = ((ParameterizedType) pType.getType()).getOwnerType();
                 handlingTypeAndParams = owner == null ? null : annotate(owner);
@@ -173,10 +178,10 @@ public class GenericTypeReflector {
             return new AnnotatedWildcardTypeImpl((WildcardType) unresolved.getType(), unresolved.getAnnotations(), lower, upper);
         }
         if (unresolved instanceof AnnotatedTypeVariable) {
-            TypeVariable var = (TypeVariable) unresolved.getType();
+            TypeVariable<?> var = (TypeVariable<?>) unresolved.getType();
             if (var.getGenericDeclaration() instanceof Class) {
                 //noinspection unchecked
-                AnnotatedType resolved = getTypeParameter(typeAndParams, var);
+                AnnotatedType resolved = getTypeParameter(typeAndParams, (TypeVariable<? extends Class<?>>) var);
                 if (resolved != null) {
                     return updateAnnotations(resolved, unresolved.getAnnotations());
                 }
@@ -504,8 +509,8 @@ public class GenericTypeReflector {
             final AnnotatedType unresolvedParam = unresolvedType.getAnnotatedActualTypeArguments()[i];
             final AnnotatedType resolvedParam = resolvedTyped.getAnnotatedActualTypeArguments()[i];
             final Type var = unresolvedParam.getType();
-            if (var instanceof TypeVariable && ((TypeVariable) var).getGenericDeclaration() == declaringClass) {
-                variables.add(((TypeVariable) var), resolvedParam);
+            if (var instanceof TypeVariable && ((TypeVariable<?>) var).getGenericDeclaration() == declaringClass) {
+                variables.add(((TypeVariable<?>) var), resolvedParam);
             } else if (unresolvedParam instanceof AnnotatedParameterizedType) {
                 if (!(resolvedParam instanceof AnnotatedParameterizedType) || !erase(unresolvedParam.getType()).equals(erase(resolvedParam.getType()))) {
                     throw new IllegalArgumentException("The provided types do not match in shape");
@@ -525,9 +530,10 @@ public class GenericTypeReflector {
                 clazz = (Class<?>)((ParameterizedType)type.getType()).getRawType();
             } else {
                 // TODO primitive types?
-                clazz = (Class<?>)type.getType();
-                if (clazz.isArray())
+                clazz = (Class<?>) type.getType();
+                if (clazz.isArray()) {
                     return getArrayExactDirectSuperTypes(annotate(clazz));
+                }
             }
 
             AnnotatedType[] superInterfaces = clazz.getAnnotatedInterfaces();
@@ -904,9 +910,9 @@ public class GenericTypeReflector {
             return new AnnotatedArrayTypeImpl(genArray, new Annotation[0], annotate(genArray.getGenericComponentType(), expandGenerics, cache));
         }
         if (type instanceof Class) {
-            Class clazz = (Class) type;
+            Class<?> clazz = (Class<?>) type;
             if (clazz.isArray()) {
-                Class componentClass = clazz.getComponentType();
+                Class<?> componentClass = clazz.getComponentType();
                 return AnnotatedArrayTypeImpl.createArrayType(
                         new AnnotatedTypeImpl(componentClass, componentClass.getAnnotations()), new Annotation[0]);
             }

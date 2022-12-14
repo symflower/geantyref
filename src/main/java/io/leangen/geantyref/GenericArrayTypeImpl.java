@@ -11,7 +11,7 @@ import java.lang.reflect.Type;
 import java.util.Objects;
 
 class GenericArrayTypeImpl implements GenericArrayType {
-    private Type componentType;
+    private final Type componentType;
 
     GenericArrayTypeImpl(Type componentType) {
         super();
@@ -19,7 +19,7 @@ class GenericArrayTypeImpl implements GenericArrayType {
     }
 
     static Class<?> createArrayType(Class<?> componentType) {
-        // there's no (clean) other way to create a array class, than creating an instance of it
+        // there's no (clean) way to create an array class, other than creating an instance of it
         return Array.newInstance(componentType, 0).getClass();
     }
 

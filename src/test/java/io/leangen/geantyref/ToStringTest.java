@@ -45,26 +45,26 @@ public class ToStringTest {
     public void parameterizedTypeTest() {
         AnnotatedType annString = TypeFactory.parameterizedAnnotatedClass(String.class, new Annotation[] {a2});
         AnnotatedType type = TypeFactory.parameterizedAnnotatedClass(List.class, new Annotation[] {a1}, annString);
-        assertEquals("@io.leangen.geantyref.ToStringTest$A1(key=Magic Key, value=123) " +
-                "java.util.List<@io.leangen.geantyref.ToStringTest$A2(meta=Meta Data, " +
-                "target=@io.leangen.geantyref.ToStringTest$A1(key=Magic Key, value=123)) java.lang.String>", type.toString());
+        assertEquals("@io.leangen.geantyref.ToStringTest$A1(key=\"Magic Key\", value=123) " +
+                "java.util.List<@io.leangen.geantyref.ToStringTest$A2(meta=\"Meta Data\", " +
+                "target=@io.leangen.geantyref.ToStringTest$A1(key=\"Magic Key\", value=123)) java.lang.String>", type.toString());
     }
 
     @Test
     public void innerTypeTest() {
         Type inner = TypeFactory.parameterizedInnerClass(ToStringTest.class, Inner.class, String.class);
         AnnotatedType type = TypeFactory.parameterizedAnnotatedType((ParameterizedType) inner, new Annotation[] {a1}, new Annotation[] {a2});
-        assertEquals("@io.leangen.geantyref.ToStringTest$A1(key=Magic Key, value=123) " +
+        assertEquals("@io.leangen.geantyref.ToStringTest$A1(key=\"Magic Key\", value=123) " +
                 "io.leangen.geantyref.ToStringTest.Inner<@io.leangen.geantyref.ToStringTest$A2" +
-                "(meta=Meta Data, target=@io.leangen.geantyref.ToStringTest$A1(key=Magic Key, value=123)) java.lang.String>", type.toString());
+                "(meta=\"Meta Data\", target=@io.leangen.geantyref.ToStringTest$A1(key=\"Magic Key\", value=123)) java.lang.String>", type.toString());
     }
 
     @Test
     public void arrayTypeTest() {
         AnnotatedType componentType = TypeFactory.parameterizedAnnotatedClass(String.class, new Annotation[] {a1});
         AnnotatedType arrayType = TypeFactory.arrayOf(componentType, new Annotation[] {a1});
-        assertEquals("@io.leangen.geantyref.ToStringTest$A1(key=Magic Key, value=123) " +
-                "java.lang.String @io.leangen.geantyref.ToStringTest$A1(key=Magic Key, value=123) []", arrayType.toString());
+        assertEquals("@io.leangen.geantyref.ToStringTest$A1(key=\"Magic Key\", value=123) " +
+                "java.lang.String @io.leangen.geantyref.ToStringTest$A1(key=\"Magic Key\", value=123) []", arrayType.toString());
     }
 
     @Test
@@ -83,27 +83,31 @@ public class ToStringTest {
                 .getActualTypeArguments()[0];
         AnnotatedType[] upperBounds = new AnnotatedType[] {TypeFactory.parameterizedAnnotatedClass(Number.class, new Annotation[] {a1})};
         AnnotatedType type = new AnnotatedWildcardTypeImpl(wild, new Annotation[]{}, null, upperBounds);
-        assertEquals("? extends @io.leangen.geantyref.ToStringTest$A1(key=Magic Key, value=123) java.lang.Number", type.toString());
+        assertEquals("? extends @io.leangen.geantyref.ToStringTest$A1(key=\"Magic Key\", value=123) java.lang.Number", type.toString());
         wild = (WildcardType) ((ParameterizedType)(new TypeToken<Class<? super Number>>(){}.getType()))
                 .getActualTypeArguments()[0];
         AnnotatedType[] lowerBounds = new AnnotatedType[] {TypeFactory.parameterizedAnnotatedClass(Number.class, new Annotation[] {a1})};
         type = new AnnotatedWildcardTypeImpl(wild, new Annotation[]{}, lowerBounds, null);
-        assertEquals("? super @io.leangen.geantyref.ToStringTest$A1(key=Magic Key, value=123) java.lang.Number", type.toString());
+        assertEquals("? super @io.leangen.geantyref.ToStringTest$A1(key=\"Magic Key\", value=123) java.lang.Number", type.toString());
     }
 
+    @SuppressWarnings({"InnerClassMayBeStatic", "unused"})
     private class Inner<T> {
     }
 
+    @SuppressWarnings("unused")
     private @interface A1 {
         String key();
         int value();
     }
 
+    @SuppressWarnings("unused")
     private @interface A2 {
         String meta();
         A1 target();
     }
 
+    @SuppressWarnings({"InnerClassMayBeStatic", "unused"})
     private class P<@Annotations.A3 T extends Number & @Annotations.A4 Serializable> {
     }
 }

@@ -62,7 +62,7 @@ class AnnotatedCaptureTypeImpl extends AnnotatedTypeImpl implements AnnotatedCap
         ArrayList<AnnotatedType> upperBoundsList = new ArrayList<>(Arrays.asList(varMap.map(variable.getAnnotatedBounds())));
 
         List<AnnotatedType> wildcardUpperBounds = Arrays.asList(wildcard.getAnnotatedUpperBounds());
-        if (wildcardUpperBounds.size() > 0 && wildcardUpperBounds.get(0).getType() == Object.class) {
+        if (!wildcardUpperBounds.isEmpty() && wildcardUpperBounds.get(0).getType() == Object.class) {
             // skip the Object bound, we already have a first upper bound from 'variable'
             upperBoundsList.addAll(wildcardUpperBounds.subList(1, wildcardUpperBounds.size()));
         } else {
@@ -72,6 +72,12 @@ class AnnotatedCaptureTypeImpl extends AnnotatedTypeImpl implements AnnotatedCap
         upperBoundsList.toArray(upperBounds);
 
         ((CaptureTypeImpl) type).init(varMap);
+    }
+
+    //Capture types can be recursive (self-referential), so instances cannot be immutable
+    AnnotatedCaptureTypeImpl setAnnotations(Annotation[] annotations) {
+        this.annotations = toMap(annotations);
+        return this;
     }
 
     @Override

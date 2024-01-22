@@ -9,6 +9,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -25,10 +26,7 @@ class AnnotatedTypeImpl implements AnnotatedType {
 
     AnnotatedTypeImpl(Type type, Annotation[] annotations) {
         this.type = Objects.requireNonNull(type);
-        this.annotations = new LinkedHashMap<>();
-        for (Annotation annotation : annotations) {
-            this.annotations.put(annotation.annotationType(), annotation);
-        }
+        this.annotations = toMap(annotations);
     }
 
     @Override
@@ -85,5 +83,13 @@ class AnnotatedTypeImpl implements AnnotatedType {
         return Arrays.stream(types)
                 .map(Object::toString)
                 .collect(Collectors.joining(", "));
+    }
+
+    protected Map<Class<? extends Annotation>, Annotation> toMap(Annotation[] annotations) {
+        Map<Class<? extends Annotation>, Annotation> map = new LinkedHashMap<>();
+        for (Annotation annotation : annotations) {
+            map.put(annotation.annotationType(), annotation);
+        }
+        return Collections.unmodifiableMap(map);
     }
 }

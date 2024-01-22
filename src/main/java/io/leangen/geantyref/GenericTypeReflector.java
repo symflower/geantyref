@@ -934,13 +934,9 @@ public class GenericTypeReflector {
                     ((AnnotatedParameterizedType) original).getAnnotatedActualTypeArguments());
         }
         if (original instanceof AnnotatedCaptureType) {
-            AnnotatedCaptureType capture = (AnnotatedCaptureType) original;
-            return (T) new AnnotatedCaptureTypeImpl(
-                    (CaptureType) capture.getType(),
-                    capture.getAnnotatedWildcardType(),
-                    capture.getAnnotatedTypeVariable(),
-                    capture.getAnnotatedUpperBounds(),
-                    annotations);
+            AnnotatedCaptureTypeImpl capture = (AnnotatedCaptureTypeImpl) original;
+            //Capture types can be recursive (self-referential), so instances must be mutated
+            return (T) capture.setAnnotations(annotations);
         }
         if (original instanceof AnnotatedWildcardType) {
             return (T) new AnnotatedWildcardTypeImpl((WildcardType) original.getType(), annotations,
@@ -1151,7 +1147,8 @@ public class GenericTypeReflector {
      * @return Type produced by recursively reducing bounded types within the structure of the given type
      */
     public static AnnotatedType reduceBounded(AnnotatedType type) {
-        return transform(capture(type), new TypeVisitor() {
+        AnnotatedType capture = capture(type);
+        return transform(capture, new TypeVisitor() {
             @Override
             protected AnnotatedType visitVariable(final AnnotatedTypeVariable type) {
                 return updateAnnotations(transform(type.getAnnotatedBounds()[0], this), type.getAnnotations());
@@ -1166,22 +1163,22 @@ public class GenericTypeReflector {
 
             @Override
             protected AnnotatedType visitCaptureType(AnnotatedCaptureType type) {
-                AnnotatedType capturedType = type.getAnnotatedLowerBounds().length > 0
+                AnnotatedType bound = type.getAnnotatedLowerBounds().length > 0
                     ? type.getAnnotatedLowerBounds()[0]
                     : type.getAnnotatedUpperBounds()[0];
 
-                if (capturedType instanceof AnnotatedParameterizedType) {
-                    AnnotatedType[] typeArguments = ((AnnotatedParameterizedType) capturedType).getAnnotatedActualTypeArguments();
+                if (bound instanceof AnnotatedParameterizedType) {
+                    AnnotatedType[] typeArguments = ((AnnotatedParameterizedType) bound).getAnnotatedActualTypeArguments();
                     for (AnnotatedType typeArgument : typeArguments) {
                         if (type.equals(typeArgument)) {
                             // recursive definition. Return the raw type to avoid endless recursion.
-                            ParameterizedType parameterizedType = (ParameterizedType) capturedType.getType();
-                            return annotate(parameterizedType.getRawType(), type.getAnnotations());
+                            ParameterizedType parameterizedType = (ParameterizedType) bound.getType();
+                            return annotate(parameterizedType.getRawType(), merge(type.getAnnotations(), bound.getAnnotations()));
                         }
                     }
                 }
 
-                return updateAnnotations(transform(capturedType, this), type.getAnnotations());
+                return updateAnnotations(transform(bound, this), type.getAnnotations());
             }
         });
     }
@@ -1199,6 +1196,7 @@ public class GenericTypeReflector {
      *
      * @return An array containing all annotations from the given arrays, without duplicates
      */
+    @SuppressWarnings({"UseBulkOperation", "ManualArrayToCollectionCopy"})
     public static Annotation[] merge(Annotation[]... annotations) {
         Set<Annotation> result = new LinkedHashSet<>();
         for (Annotation[] annos : annotations) {

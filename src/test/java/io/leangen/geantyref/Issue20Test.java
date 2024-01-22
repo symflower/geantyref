@@ -5,115 +5,137 @@
 
 package io.leangen.geantyref;
 
-import io.leangen.geantyref.CaptureSamplesTest.Foo;
+import junit.framework.TestCase;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.ParameterizedType;
-import junit.framework.TestCase;
+import java.util.Arrays;
+
+import static io.leangen.geantyref.Annotations.A1;
+import static io.leangen.geantyref.Annotations.A2;
+import static io.leangen.geantyref.Annotations.A3;
+import static io.leangen.geantyref.Annotations.A4;
+import static io.leangen.geantyref.Annotations.A5;
+import static org.junit.Assert.assertArrayEquals;
 
 /**
- * https://github.com/leangen/geantyref/issues/20
+ * <a href="https://github.com/leangen/geantyref/issues/20">Issue 20</a>
  */
 public class Issue20Test extends TestCase {
 
-  public interface UnitX<Q extends QuantityX<Q>> {
+    @SuppressWarnings("unused")
+    public interface UnitX<@A2 Q extends @A5 QuantityX<@A3 Q>> {
 
-    Q getUnitQ();
-  }
-
-  public interface QuantityX<Q extends QuantityX<Q>> {
-
-    Q getQuantityQ();
-  }
-
-  static class TestClass {
-
-    public UnitX<?> returnType() {
-      return null;
+        Q getUnitQ();
     }
-  }
 
-  public void testStackOverflow() throws Exception {
-    AnnotatedType type = GenericTypeReflector.reduceBounded(GenericTypeReflector.annotate(
-        GenericTypeReflector.getExactReturnType(TestClass.class.getMethod("returnType"),
-            TestClass.class)));
+    @SuppressWarnings("unused")
+    public interface QuantityX<@A4 Q extends QuantityX<Q>> {
 
-    assertNotNull(type);
-    assertTrue(type instanceof AnnotatedParameterizedType);
-    AnnotatedParameterizedType result = (AnnotatedParameterizedType) type;
-
-    assertSame(((ParameterizedType) result.getType()).getRawType(), UnitX.class);
-    assertSame(result.getAnnotatedActualTypeArguments()[0].getType(), QuantityX.class);
-  }
-
-  public interface StevenSpecial<X extends OkType, Q extends QuantityY<Q>> {
-
-    Q getUnitQ();
-
-    OkType getOkType();
-  }
-
-  public interface QuantityY<Q extends QuantityY<Q>> {
-
-    Q getQuantityQ();
-  }
-
-  public interface OkType {
-    String getXxx();
-  }
-
-  static class OkClass implements OkType {
-    public String getXxx() {
-      return "";
+        Q getQuantityQ();
     }
-  }
 
-  static class TestClass2 {
+    static class TestClass {
 
-    public StevenSpecial<OkClass, ?> returnType() {
-      return null;
+        public UnitX<@A1 ?> returnType() {
+            return null;
+        }
     }
-  }
 
-  public void testStackOverflow2() throws Exception {
-    AnnotatedType type = GenericTypeReflector.reduceBounded(GenericTypeReflector.annotate(
-        GenericTypeReflector.getExactReturnType(TestClass2.class.getMethod("returnType"),
-            TestClass2.class)));
+    public void testRecursiveTypes() throws Exception {
+        AnnotatedType type = GenericTypeReflector.reduceBounded(
+                GenericTypeReflector.getExactReturnType(TestClass.class.getMethod("returnType"),
+                        GenericTypeReflector.annotate(TestClass.class)));
 
-    assertNotNull(type);
-    assertTrue(type instanceof AnnotatedParameterizedType);
-    AnnotatedParameterizedType result = (AnnotatedParameterizedType) type;
+        assertNotNull(type);
+        assertTrue(type instanceof AnnotatedParameterizedType);
+        AnnotatedParameterizedType result = (AnnotatedParameterizedType) type;
 
-    assertSame(((ParameterizedType) result.getType()).getRawType(), StevenSpecial.class);
-    assertSame(result.getAnnotatedActualTypeArguments()[0].getType(), OkClass.class);
-    assertSame(result.getAnnotatedActualTypeArguments()[1].getType(), QuantityY.class);
-  }
-
-  public interface DoubleParameters<X extends OkType, Q extends DoubleParameters<X, Q>> {
-
-    Q getUnitQ();
-
-    OkType getOkType();
-  }
-
-  static class TestClass3 {
-
-    public DoubleParameters<OkClass, ?> returnType() {
-      return null;
+        assertSame(((ParameterizedType) result.getType()).getRawType(), UnitX.class);
+        AnnotatedType param = result.getAnnotatedActualTypeArguments()[0];
+        assertSame(param.getType(), QuantityX.class);
+        Class<?>[] expected = new Class[] { A1.class, A2.class, A3.class, A4.class, A5.class };
+        assertArrayEquals(expected, Arrays.stream(param.getAnnotations()).map(Annotation::annotationType).toArray(Class[]::new));
     }
-  }
 
-  public void testStackOverflow3() throws Exception {
-    AnnotatedType type = GenericTypeReflector.reduceBounded(GenericTypeReflector.annotate(
-        GenericTypeReflector.getExactReturnType(TestClass3.class.getMethod("returnType"),
-            TestClass3.class)));
+    @SuppressWarnings("unused")
+    public interface StevenSpecial<X extends OkType, Q extends QuantityY<Q>> {
 
-    assertNotNull(type);
-    assertTrue(type instanceof AnnotatedParameterizedType);
-    AnnotatedParameterizedType result = (AnnotatedParameterizedType) type;
+        Q getUnitQ();
 
-    assertSame(((ParameterizedType) result.getType()).getRawType(), DoubleParameters.class);
-    assertSame(result.getAnnotatedActualTypeArguments()[0].getType(), OkClass.class);
-    assertSame(result.getAnnotatedActualTypeArguments()[1].getType(), DoubleParameters.class);
-  }
+        X getOkType();
+    }
+
+    @SuppressWarnings("unused")
+    public interface QuantityY<Q extends QuantityY<Q>> {
+
+        Q getQuantityQ();
+    }
+
+    @SuppressWarnings("unused")
+    public interface OkType {
+        String getXxx();
+    }
+
+    static class OkClass implements OkType {
+        public String getXxx() {
+            return "";
+        }
+    }
+
+    static class TestClass2 {
+
+        public StevenSpecial<OkClass, ?> returnType() {
+            return null;
+        }
+    }
+
+    public void testRecursiveTypes2() throws Exception {
+        AnnotatedType type = GenericTypeReflector.reduceBounded(
+                GenericTypeReflector.getExactReturnType(TestClass2.class.getMethod("returnType"),
+                        GenericTypeReflector.annotate(TestClass2.class)));
+
+        assertNotNull(type);
+        assertTrue(type instanceof AnnotatedParameterizedType);
+        AnnotatedParameterizedType result = (AnnotatedParameterizedType) type;
+
+        assertSame(((ParameterizedType) result.getType()).getRawType(), StevenSpecial.class);
+        assertSame(result.getAnnotatedActualTypeArguments()[0].getType(), OkClass.class);
+        assertSame(result.getAnnotatedActualTypeArguments()[1].getType(), QuantityY.class);
+    }
+
+    @SuppressWarnings("unused")
+    public interface DoubleParameters<X extends OkType, Q extends DoubleParameters<X, Q>> {
+
+        Q getUnitQ();
+
+        X getOkType();
+    }
+
+    static class TestClass3 {
+
+        public DoubleParameters<OkClass, ?> returnType() {
+            return null;
+        }
+    }
+
+    public void testRecursiveTypes3() throws Exception {
+        AnnotatedType type = GenericTypeReflector.reduceBounded(GenericTypeReflector.annotate(
+                GenericTypeReflector.getExactReturnType(TestClass3.class.getMethod("returnType"),
+                        TestClass3.class)));
+
+        assertNotNull(type);
+        assertTrue(type instanceof AnnotatedParameterizedType);
+        AnnotatedParameterizedType result = (AnnotatedParameterizedType) type;
+
+        assertSame(((ParameterizedType) result.getType()).getRawType(), DoubleParameters.class);
+        assertSame(result.getAnnotatedActualTypeArguments()[0].getType(), OkClass.class);
+        assertSame(result.getAnnotatedActualTypeArguments()[1].getType(), DoubleParameters.class);
+    }
+
+    public static void main(String[] args) {
+
+    }
 }

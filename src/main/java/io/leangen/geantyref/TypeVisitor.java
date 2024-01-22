@@ -1,8 +1,5 @@
 package io.leangen.geantyref;
 
-import static io.leangen.geantyref.GenericTypeReflector.transform;
-import static java.util.Arrays.stream;
-
 import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
@@ -15,6 +12,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
+
+import static io.leangen.geantyref.GenericTypeReflector.transform;
 
 @SuppressWarnings("WeakerAccess")
 public abstract class TypeVisitor {
@@ -76,13 +75,14 @@ public abstract class TypeVisitor {
 					.map(bound -> transform(bound, this))
 					.toArray(AnnotatedType[]::new);
 		}
+		AnnotatedCaptureType annotatedCapture = new AnnotatedCaptureTypeImpl((CaptureType) type.getType(),
+				type.getAnnotatedWildcardType(), type.getAnnotatedTypeVariable(),
+				lowerBounds, null, type.getAnnotations());
+		captureCache.put(key, annotatedCapture);
 		AnnotatedType[] upperBounds = Arrays.stream(type.getAnnotatedUpperBounds())
 				.map(bound -> transform(bound, this))
 				.toArray(AnnotatedType[]::new);
-		AnnotatedCaptureType annotatedCapture = new AnnotatedCaptureTypeImpl((CaptureType) type.getType(),
-				type.getAnnotatedWildcardType(), type.getAnnotatedTypeVariable(),
-				lowerBounds, upperBounds, type.getAnnotations());
-		captureCache.put(key, annotatedCapture);
+		annotatedCapture.setAnnotatedUpperBounds(upperBounds);
 		return annotatedCapture;
 	}
 

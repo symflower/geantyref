@@ -46,7 +46,7 @@ class AnnotatedParameterizedTypeImpl extends AnnotatedTypeImpl implements Annota
 
         StringBuilder typeName = new StringBuilder();
         if (rawType.getOwnerType() != null) {
-            typeName.append(GenericTypeReflector.getTypeName(rawType.getOwnerType())).append('.');
+            typeName.append(GenericTypeReflector.getTypeName(rawType.getOwnerType())).append('$');
 
             String prefix = (rawType.getOwnerType() instanceof ParameterizedType) ? ((Class<?>) ((ParameterizedType) rawType.getOwnerType()).getRawType()).getName() + '$'
                     : ((Class<?>) rawType.getOwnerType()).getName() + '$';
@@ -54,6 +54,6 @@ class AnnotatedParameterizedTypeImpl extends AnnotatedTypeImpl implements Annota
                 rawName = rawName.substring(prefix.length());
         }
         typeName.append(rawName);
-        return annotationsString() + typeName.toString() + "<" + typesString(typeArguments) + ">";
+        return annotationsString() + typeName + "<" + typesString(typeArguments) + ">";
     }
 }

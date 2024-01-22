@@ -5,11 +5,14 @@
 
 package io.leangen.geantyref;
 
+import io.leangen.geantyref.Annotations.A3;
+import io.leangen.geantyref.Annotations.A4;
 import org.junit.Test;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -51,12 +54,16 @@ public class ToStringTest {
     }
 
     @Test
-    public void innerTypeTest() {
+    public void innerTypeTest() throws NoSuchMethodException {
         Type inner = TypeFactory.parameterizedInnerClass(ToStringTest.class, Inner.class, String.class);
         AnnotatedType type = TypeFactory.parameterizedAnnotatedType((ParameterizedType) inner, new Annotation[] {a1}, new Annotation[] {a2});
         assertEquals("@io.leangen.geantyref.ToStringTest$A1(key=\"Magic Key\", value=123) " +
-                "io.leangen.geantyref.ToStringTest.Inner<@io.leangen.geantyref.ToStringTest$A2" +
+                "io.leangen.geantyref.ToStringTest$Inner<@io.leangen.geantyref.ToStringTest$A2" +
                 "(meta=\"Meta Data\", target=@io.leangen.geantyref.ToStringTest$A1(key=\"Magic Key\", value=123)) java.lang.String>", type.toString());
+
+        Method method = Inner.class.getMethod("test");
+        assertEquals(method.getGenericReturnType().toString(), inner.toString());
+        assertEquals(method.getAnnotatedReturnType().toString(), GenericTypeReflector.annotate(inner).toString());
     }
 
     @Test
@@ -93,6 +100,10 @@ public class ToStringTest {
 
     @SuppressWarnings({"InnerClassMayBeStatic", "unused"})
     private class Inner<T> {
+
+        public Inner<String> test() {
+            return null;
+        }
     }
 
     @SuppressWarnings("unused")
@@ -108,6 +119,6 @@ public class ToStringTest {
     }
 
     @SuppressWarnings({"InnerClassMayBeStatic", "unused"})
-    private class P<@Annotations.A3 T extends Number & @Annotations.A4 Serializable> {
+    private class P<@A3 T extends Number & @A4 Serializable> {
     }
 }

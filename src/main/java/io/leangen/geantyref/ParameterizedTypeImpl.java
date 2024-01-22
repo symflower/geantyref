@@ -56,7 +56,7 @@ class ParameterizedTypeImpl implements ParameterizedType {
         String clazz = rawType.getName();
 
         if (ownerType != null) {
-            sb.append(GenericTypeReflector.getTypeName(ownerType)).append('.');
+            sb.append(GenericTypeReflector.getTypeName(ownerType)).append('$');
 
             String prefix = (ownerType instanceof ParameterizedType) ? ((Class<?>) ((ParameterizedType) ownerType).getRawType()).getName() + '$'
                     : ((Class<?>) ownerType).getName() + '$';

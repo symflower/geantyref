@@ -49,13 +49,13 @@ public class TypeTest extends TestCase {
         assertTypesEqual(new TypeToken<TypeTest.InnerWithParam<String>>() {
                          },
                 new ParameterizedTypeImpl(TypeTest.InnerWithParam.class, new Type[]{String.class}, TypeTest.class),
-                "io.leangen.geantyref.TypeTest.InnerWithParam<java.lang.String>");
+                "io.leangen.geantyref.TypeTest$InnerWithParam<java.lang.String>");
         assertTypesEqual(new TypeToken<TypeTest.InnerWithParam<String>.InnerInnerWithParam<Integer>>() {
                          },
                 new ParameterizedTypeImpl(TypeTest.InnerWithParam.InnerInnerWithParam.class, new Type[]{Integer.class},
                         new ParameterizedTypeImpl(TypeTest.InnerWithParam.class, new Type[]{String.class}, TypeTest.class)
                 ),
-                "io.leangen.geantyref.TypeTest.InnerWithParam<java.lang.String>.InnerInnerWithParam<java.lang.Integer>");
+                "io.leangen.geantyref.TypeTest$InnerWithParam<java.lang.String>$InnerInnerWithParam<java.lang.Integer>");
     }
 
     public void testUnboundWildcard() {

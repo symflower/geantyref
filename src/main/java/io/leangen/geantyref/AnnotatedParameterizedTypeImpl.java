@@ -14,7 +14,7 @@ import static io.leangen.geantyref.GenericTypeReflector.typeArraysEqual;
 
 class AnnotatedParameterizedTypeImpl extends AnnotatedTypeImpl implements AnnotatedParameterizedType {
 
-    private AnnotatedType[] typeArguments;
+    private final AnnotatedType[] typeArguments;
 
     AnnotatedParameterizedTypeImpl(ParameterizedType rawType, Annotation[] annotations, AnnotatedType[] typeArguments) {
         super(rawType, annotations);
@@ -28,6 +28,7 @@ class AnnotatedParameterizedTypeImpl extends AnnotatedTypeImpl implements Annota
 
     @Override
     public boolean equals(Object other) {
+        if (this == other) return true;
         if (!(other instanceof AnnotatedParameterizedType) || !super.equals(other)) {
             return false;
         }

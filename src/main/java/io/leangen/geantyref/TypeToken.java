@@ -12,19 +12,19 @@ import java.lang.reflect.Type;
 
 /**
  * Wrapper around {@link Type}.
- *
  * You can use this to create instances of Type for a type known at compile
  * time.
- *
  * For example, to get the Type that represents List&lt;String&gt;:
  * <code>Type listOfString = new TypeToken&lt;List&lt;String&gt;&gt;(){}.getType();</code>
  *
  * @param <T> The type represented by this TypeToken.
  * @author Wouter Coekaerts {@literal (wouter@coekaerts.be)}
  */
+@SuppressWarnings("unused")
 public abstract class TypeToken<T> {
 
     private final AnnotatedType type;
+    private volatile AnnotatedType canonical;
 
     /**
      * Constructs a type token.
@@ -69,7 +69,10 @@ public abstract class TypeToken<T> {
     }
 
     public AnnotatedType getCanonicalType() {
-        return GenericTypeReflector.toCanonical(type);
+        if (canonical == null) {
+            canonical = GenericTypeReflector.toCanonical(type);
+        }
+        return canonical;
     }
 
     private AnnotatedType extractType() {
@@ -86,7 +89,8 @@ public abstract class TypeToken<T> {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof TypeToken && GenericTypeReflector.equals(type, ((TypeToken<?>) obj).type);
+        if (this == obj) return true;
+        return obj instanceof TypeToken && getCanonicalType().equals(((TypeToken<?>) obj).type);
     }
 
     @Override

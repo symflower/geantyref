@@ -44,6 +44,6 @@ class AnnotatedTypeVariableImpl extends AnnotatedTypeImpl implements AnnotatedTy
 
     @Override
     public String toString() {
-        return annotationsString() + ((TypeVariable) type).getName();
+        return annotationsString() + ((TypeVariable<?>) type).getName();
     }
 }

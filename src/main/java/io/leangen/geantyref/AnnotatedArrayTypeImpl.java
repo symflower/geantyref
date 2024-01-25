@@ -12,7 +12,7 @@ import java.lang.reflect.Type;
 
 class AnnotatedArrayTypeImpl extends AnnotatedTypeImpl implements AnnotatedArrayType {
 
-    private AnnotatedType componentType;
+    private final AnnotatedType componentType;
 
     AnnotatedArrayTypeImpl(Type type, Annotation[] annotations, AnnotatedType componentType) {
         super(type, annotations);
@@ -30,9 +30,10 @@ class AnnotatedArrayTypeImpl extends AnnotatedTypeImpl implements AnnotatedArray
 
     @Override
     public boolean equals(Object other) {
+        if (this == other) return true;
         return other instanceof AnnotatedArrayType
                 && super.equals(other)
-                && ((AnnotatedArrayType) other).getAnnotatedGenericComponentType().equals(this.componentType);
+                && this.componentType.equals(((AnnotatedArrayType) other).getAnnotatedGenericComponentType());
     }
 
     @Override

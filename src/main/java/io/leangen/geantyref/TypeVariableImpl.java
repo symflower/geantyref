@@ -41,13 +41,6 @@ public class TypeVariableImpl<D extends GenericDeclaration> implements TypeVaria
         this.bounds = bounds;
     }
 
-    private static AnnotatedType[] annotateBounds(Type[] bounds) {
-        if (bounds == null || bounds.length == 0) {
-            throw new IllegalArgumentException("There must be at least one bound. For an unbound variable, the bound must be Object");
-        }
-        return Arrays.stream(bounds).map(GenericTypeReflector::annotate).toArray(AnnotatedType[]::new);
-    }
-
     @Override
     public Type[] getBounds() {
         return Arrays.stream(this.bounds).map(AnnotatedType::getType).toArray(Type[]::new);
@@ -91,7 +84,7 @@ public class TypeVariableImpl<D extends GenericDeclaration> implements TypeVaria
             return true;
         }
         if (other instanceof TypeVariable) {
-            TypeVariable that = (TypeVariable) other;
+            TypeVariable<?> that = (TypeVariable<?>) other;
             return Objects.equals(this.genericDeclaration, that.getGenericDeclaration()) && Objects.equals(this.name, that.getName());
         } else {
             return false;

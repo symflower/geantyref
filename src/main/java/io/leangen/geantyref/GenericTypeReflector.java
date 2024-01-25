@@ -1247,8 +1247,8 @@ public class GenericTypeReflector {
     public static boolean equals(AnnotatedType t1, AnnotatedType t2) {
         Objects.requireNonNull(t1);
         Objects.requireNonNull(t2);
-        t1 = t1 instanceof AnnotatedTypeImpl ? t1 : toCanonical(t1);
-        t2 = t2 instanceof AnnotatedTypeImpl ? t2 : toCanonical(t2);
+        t1 = toCanonical(t1);
+        t2 = toCanonical(t2);
 
         return t1.equals(t2);
     }

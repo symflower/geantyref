@@ -5,18 +5,21 @@
 
 package io.leangen.geantyref;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import java.lang.reflect.Method;
 import java.util.Set;
 
-/**
+import static org.junit.Assert.assertEquals;
+
+/*
  * https://github.com/leangen/geantyref/issues/17
  */
-public class Issue17Test extends TestCase {
-    public void testTypeLiteralUsingTypeToken() throws NoSuchMethodException {
-        TypeToken<Set<? extends Number>> numberTypeToken = new TypeToken<Set<? extends Number>>() {
-        };
+public class Issue17Test {
+
+    @Test
+    public void testTypeTokenEqualityAndHashCode() throws NoSuchMethodException {
+        TypeToken<Set<? extends Number>> numberTypeToken = new TypeToken<Set<? extends Number>>() {};
         Method method = Issue17Test.class.getDeclaredMethod("dummyMethod", Set.class);
         TypeToken<?> otherTypeToken = TypeToken.get(method.getParameters()[0].getParameterizedType());
 
@@ -25,6 +28,7 @@ public class Issue17Test extends TestCase {
         assertEquals("Both TypeTokens should have equal hash codes", numberTypeToken.hashCode(), otherTypeToken.hashCode());
     }
 
+    @SuppressWarnings("unused")
     private void dummyMethod(Set<? extends Number> test) {
     }
 }

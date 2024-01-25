@@ -9,7 +9,7 @@ A fork of the excellent [GenTyRef](https://code.google.com/archive/p/gentyref/) 
 
 **Table of Contents**
 
-- [GeAnTyRef](#)
+- [GeantyRef](#)
 	- [Goal](#goal)
 	- [Overview](#overview)
 	- [Usage](#usage)
@@ -120,7 +120,7 @@ class LongContainer extends NumberContainer<Long> {}
 If we'd call `LongContainer.class.getGenericSuperclass()` it would correctly return `NumberContainer<Long>`
 but getting from there to `Container<Long>` is much more difficult, as there's no direct way.
 
-GeAnTyRef allows us to simply call
+GeantyRef allows us to simply call
 `GenericTypeReflector.getExactSuperType(LongContainer.class, Container.class)` to get `Container<Long>`
 
 ### Getting the exact sub type

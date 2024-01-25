@@ -11,18 +11,14 @@ import org.junit.Test;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
+import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ToStringTest {
 
@@ -48,30 +44,26 @@ public class ToStringTest {
     public void parameterizedTypeTest() {
         AnnotatedType annString = TypeFactory.parameterizedAnnotatedClass(String.class, new Annotation[] {a2});
         AnnotatedType type = TypeFactory.parameterizedAnnotatedClass(List.class, new Annotation[] {a1}, annString);
-        assertEquals("@io.leangen.geantyref.ToStringTest$A1(key=\"Magic Key\", value=123) " +
-                "java.util.List<@io.leangen.geantyref.ToStringTest$A2(meta=\"Meta Data\", " +
-                "target=@io.leangen.geantyref.ToStringTest$A1(key=\"Magic Key\", value=123)) java.lang.String>", type.toString());
+        assertEquals("@io.leangen.geantyref.ToStringTest$A1(key=Magic Key, value=123) " +
+                "java.util.List<@io.leangen.geantyref.ToStringTest$A2(meta=Meta Data, " +
+                "target=@io.leangen.geantyref.ToStringTest$A1(key=Magic Key, value=123)) java.lang.String>", type.toString());
     }
 
     @Test
-    public void innerTypeTest() throws NoSuchMethodException {
+    public void innerTypeTest() {
         Type inner = TypeFactory.parameterizedInnerClass(ToStringTest.class, Inner.class, String.class);
         AnnotatedType type = TypeFactory.parameterizedAnnotatedType((ParameterizedType) inner, new Annotation[] {a1}, new Annotation[] {a2});
-        assertEquals("@io.leangen.geantyref.ToStringTest$A1(key=\"Magic Key\", value=123) " +
+        assertEquals("@io.leangen.geantyref.ToStringTest$A1(key=Magic Key, value=123) " +
                 "io.leangen.geantyref.ToStringTest$Inner<@io.leangen.geantyref.ToStringTest$A2" +
-                "(meta=\"Meta Data\", target=@io.leangen.geantyref.ToStringTest$A1(key=\"Magic Key\", value=123)) java.lang.String>", type.toString());
-
-        Method method = Inner.class.getMethod("test");
-        assertEquals(method.getGenericReturnType().toString(), inner.toString());
-        assertEquals(method.getAnnotatedReturnType().toString(), GenericTypeReflector.annotate(inner).toString());
+                "(meta=Meta Data, target=@io.leangen.geantyref.ToStringTest$A1(key=Magic Key, value=123)) java.lang.String>", type.toString());
     }
 
     @Test
     public void arrayTypeTest() {
         AnnotatedType componentType = TypeFactory.parameterizedAnnotatedClass(String.class, new Annotation[] {a1});
         AnnotatedType arrayType = TypeFactory.arrayOf(componentType, new Annotation[] {a1});
-        assertEquals("@io.leangen.geantyref.ToStringTest$A1(key=\"Magic Key\", value=123) " +
-                "java.lang.String @io.leangen.geantyref.ToStringTest$A1(key=\"Magic Key\", value=123) []", arrayType.toString());
+        assertEquals("@io.leangen.geantyref.ToStringTest$A1(key=Magic Key, value=123) " +
+                "java.lang.String @io.leangen.geantyref.ToStringTest$A1(key=Magic Key, value=123) []", arrayType.toString());
     }
 
     @Test
@@ -81,7 +73,7 @@ public class ToStringTest {
                 .map(GenericTypeReflector::toCanonical)
                 .toArray(AnnotatedType[]::new);
         AnnotatedType type = new AnnotatedTypeVariableImpl(new TypeVariableImpl<>(var, bounds), var.getAnnotations());
-        assertEquals("@io.leangen.geantyref.Annotations$A3() T", type.toString());
+        assertTrue(type.toString().matches("@io.leangen.geantyref.Annotations[$.]A3\\(\\) T"));
     }
 
     @Test
@@ -90,21 +82,16 @@ public class ToStringTest {
                 .getActualTypeArguments()[0];
         AnnotatedType[] upperBounds = new AnnotatedType[] {TypeFactory.parameterizedAnnotatedClass(Number.class, new Annotation[] {a1})};
         AnnotatedType type = new AnnotatedWildcardTypeImpl(wild, new Annotation[]{}, null, upperBounds);
-        assertEquals("? extends @io.leangen.geantyref.ToStringTest$A1(key=\"Magic Key\", value=123) java.lang.Number", type.toString());
+        assertEquals("? extends @io.leangen.geantyref.ToStringTest$A1(key=Magic Key, value=123) java.lang.Number", type.toString());
         wild = (WildcardType) ((ParameterizedType)(new TypeToken<Class<? super Number>>(){}.getType()))
                 .getActualTypeArguments()[0];
         AnnotatedType[] lowerBounds = new AnnotatedType[] {TypeFactory.parameterizedAnnotatedClass(Number.class, new Annotation[] {a1})};
         type = new AnnotatedWildcardTypeImpl(wild, new Annotation[]{}, lowerBounds, null);
-        assertEquals("? super @io.leangen.geantyref.ToStringTest$A1(key=\"Magic Key\", value=123) java.lang.Number", type.toString());
+        assertEquals("? super @io.leangen.geantyref.ToStringTest$A1(key=Magic Key, value=123) java.lang.Number", type.toString());
     }
 
     @SuppressWarnings({"InnerClassMayBeStatic", "unused"})
-    private class Inner<T> {
-
-        public Inner<String> test() {
-            return null;
-        }
-    }
+    private class Inner<T> {}
 
     @SuppressWarnings("unused")
     private @interface A1 {

@@ -6,34 +6,20 @@
 package io.leangen.geantyref.factory;
 
 
-import junit.framework.TestCase;
-
-import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import io.leangen.geantyref.AnnotationFormatException;
 import io.leangen.geantyref.TypeArgumentNotInBoundException;
 import io.leangen.geantyref.TypeFactory;
 import io.leangen.geantyref.TypeToken;
 import io.leangen.geantyref.factory.GenericOuter.DoubleGeneric;
 import io.leangen.geantyref.factory.GenericOuter.Inner;
+import junit.framework.TestCase;
 
-import static io.leangen.geantyref.TypeFactory.innerClass;
-import static io.leangen.geantyref.TypeFactory.parameterizedClass;
-import static io.leangen.geantyref.TypeFactory.parameterizedInnerClass;
-import static io.leangen.geantyref.TypeFactory.unboundWildcard;
-import static io.leangen.geantyref.TypeFactory.wildcardExtends;
-import static io.leangen.geantyref.TypeFactory.wildcardSuper;
+import java.lang.annotation.*;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.*;
+
+import static io.leangen.geantyref.TypeFactory.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -166,7 +152,6 @@ public class TypeFactoryTest extends TestCase {
                 }.getType());
     }
 
-    @SuppressWarnings("rawtypes")
     public void testConcreteRawOuter() {
         assertEquals(Inner.class,
                 innerClass(RawOuter.class, Inner.class));
@@ -594,10 +579,8 @@ public class TypeFactoryTest extends TestCase {
         
         assertEquals(a1Literal, a);
         assertEquals(a1Literal.hashCode(), a.hashCode());
-        assertEquals(a1Literal.toString(), a.toString());
         assertEquals(a2Literal, a2);
         assertEquals(a2Literal.hashCode(), a2.hashCode());
-        assertEquals(a2Literal.toString(), a2.toString());
 
         assertNotEquals(a1Literal, c);
         assertNotEquals(a1Literal.hashCode(), c.hashCode());

@@ -25,18 +25,6 @@ import static org.junit.Assert.assertArrayEquals;
  */
 public class Issue20Test extends TestCase {
 
-    @SuppressWarnings("unused")
-    public interface UnitX<@A2 Q extends @A5 QuantityX<@A3 Q>> {
-
-        Q getUnitQ();
-    }
-
-    @SuppressWarnings("unused")
-    public interface QuantityX<@A4 Q extends QuantityX<Q>> {
-
-        Q getQuantityQ();
-    }
-
     static class TestClass {
 
         public UnitX<@A1 ?> returnType() {

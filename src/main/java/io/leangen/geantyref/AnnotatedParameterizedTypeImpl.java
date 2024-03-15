@@ -57,4 +57,9 @@ class AnnotatedParameterizedTypeImpl extends AnnotatedTypeImpl implements Annota
         typeName.append(rawName);
         return annotationsString() + typeName + "<" + typesString(typeArguments) + ">";
     }
+
+    @Override
+    public AnnotatedType getAnnotatedOwnerType() {
+        return null;
+    }
 }

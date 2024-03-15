@@ -87,4 +87,9 @@ class AnnotatedWildcardTypeImpl extends AnnotatedTypeImpl implements AnnotatedWi
             }
         }
     }
+
+    @Override
+    public AnnotatedType getAnnotatedOwnerType() {
+        return null;
+    }
 }

@@ -46,4 +46,9 @@ class AnnotatedTypeVariableImpl extends AnnotatedTypeImpl implements AnnotatedTy
     public String toString() {
         return annotationsString() + ((TypeVariable<?>) type).getName();
     }
+
+    @Override
+    public AnnotatedType getAnnotatedOwnerType() {
+        return null;
+    }
 }

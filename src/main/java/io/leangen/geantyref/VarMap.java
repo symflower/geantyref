@@ -17,7 +17,9 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static io.leangen.geantyref.GenericTypeReflector.*;
 import static java.util.Arrays.stream;
@@ -31,6 +33,11 @@ import static java.util.Arrays.stream;
 class VarMap {
 
     private final Map<TypeVariable, AnnotatedType> map = new HashMap<>();
+
+    /**
+     * Contains the currently resolving {@link TypeVariable} instances during {@link #map(AnnotatedType, MappingMode)} calls.
+     */
+    private final Set<TypeVariable<?>> currentlyResolvingTypeVariable = new HashSet<>();
 
     /**
      * Creates an empty VarMap
@@ -95,7 +102,18 @@ class VarMap {
             if (!map.containsKey(tv)) {
                 if (mappingMode.equals(MappingMode.ALLOW_INCOMPLETE)) {
                     AnnotatedTypeVariable variable = (AnnotatedTypeVariable) type;
-                    AnnotatedType[] bounds = map(variable.getAnnotatedBounds(), mappingMode);
+                    AnnotatedType[] bounds;
+                    if(!currentlyResolvingTypeVariable.add(tv)) {
+                        //Issue #27: We have already seen this TypeVariable during the current resolution, so we need to abort
+                        //Otherwise, we get a StackOverflowError
+                        bounds = new AnnotatedType[]{new AnnotatedTypeImpl(Object.class)};
+                    }else {
+                        try{
+                            bounds = map(variable.getAnnotatedBounds(), mappingMode);
+                        }finally{
+                            currentlyResolvingTypeVariable.remove(tv);
+                        }
+                    }
                     Annotation[] merged = merge(variable.getAnnotations(), tv.getAnnotations());
                     TypeVariableImpl v = new TypeVariableImpl<>(tv, merged, bounds);
                     return new AnnotatedTypeVariableImpl(v, merged);

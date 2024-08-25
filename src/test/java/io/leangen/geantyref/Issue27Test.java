@@ -5,15 +5,16 @@
 
 package io.leangen.geantyref;
 
+import io.leangen.geantyref.Annotations.*;
 import org.junit.Test;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
+import java.lang.reflect.*;
+import java.util.Map;
 import java.util.Objects;
 
-import static org.junit.Assert.assertEquals;
+import static io.leangen.geantyref.Assertions.assertAnnotationsPresent;
+import static io.leangen.geantyref.Assertions.assertEqualTypeVariables;
+import static io.leangen.geantyref.Assertions.assertTypeIsRecursive;
 
 /**
  * <a href="https://github.com/leangen/geantyref/issues/27">StackOverflowError in VarMap.map when calling GenericTypeReflector.getParameterTypes()</a>
@@ -21,39 +22,49 @@ import static org.junit.Assert.assertEquals;
 public class Issue27Test {
 
     @Test
-    public void testIssue27_Stackoverflow_VarMap() throws NoSuchMethodException {
-        Class<?> cls = ProjectValidator.class;
-        Method method = reflectValidateMethod(cls);
-        Type[] types = GenericTypeReflector.getParameterTypes(method, cls);
-
-        assertEquals(2, types.length);
-        assertEquals(long.class, types[0]);
-        ParameterizedType clsType = (ParameterizedType) types[1];
-        assertEquals(Class.class.getName() + "<T>", clsType.getTypeName());
-        assertEquals(Class.class, clsType.getRawType());
-
-        TypeVariable<?> typeVar = (TypeVariable<?>) clsType.getActualTypeArguments()[0];
-        assertEquals(Resource.class.getName() + "<T>", typeVar.getBounds()[0].getTypeName());
+    public void getParameterTypesOnRecursiveType() throws NoSuchMethodException {
+        AnnotatedType cls = GenericTypeReflector.annotate(SelfReferential.class);
+        Method method = reflectSelfRefMethod((Class<?>) cls.getType());
+        AnnotatedType[] paramTypes = GenericTypeReflector.getParameterTypes(method, cls);
+        AnnotatedParameterizedType mapType = (AnnotatedParameterizedType) paramTypes[0];
+        AnnotatedTypeVariable keyType = (AnnotatedTypeVariable) mapType.getAnnotatedActualTypeArguments()[0];
+        AnnotatedTypeVariable valueType = (AnnotatedTypeVariable) mapType.getAnnotatedActualTypeArguments()[1];
+        TypeVariable<Method> T = method.getTypeParameters()[0];
+        System.out.println(mapType.getType().getTypeName());
+        assertEqualTypeVariables(T, keyType.getType());
+        assertEqualTypeVariables(T, valueType.getType());
+        assertAnnotationsPresent(keyType, A6.class, A3.class);
+        assertAnnotationsPresent(valueType, A7.class, A3.class);
+        for (AnnotatedTypeVariable var : new AnnotatedTypeVariable[] {keyType, valueType}) {
+            AnnotatedParameterizedType bound = (AnnotatedParameterizedType) var.getAnnotatedBounds()[0];
+            AnnotatedType keyA = bound.getAnnotatedActualTypeArguments()[0];
+            AnnotatedType keyB = bound.getAnnotatedActualTypeArguments()[1];
+            assertEqualTypeVariables(T, keyA.getType());
+            assertAnnotationsPresent(keyA, A4.class, A3.class, A1.class);
+            assertEqualTypeVariables(T, keyB.getType());
+            assertAnnotationsPresent(keyB, A5.class, A3.class, A2.class);
+            assertTypeIsRecursive(bound);
+        }
     }
 
     @Test(expected = UnresolvedTypeVariableException.class)
-    public void testIssue27_Map_exact_shall_throw_UnresolvedTypeVariableException() throws NoSuchMethodException {
-        Class<?> cls = ProjectValidator.class;
-        Method method = reflectValidateMethod(cls);
+    public void getExactParameterTypesOnRecursiveType() throws NoSuchMethodException {
+        Class<?> cls = SelfReferential.class;
+        Method method = reflectSelfRefMethod(cls);
         GenericTypeReflector.getExactParameterTypes(method, cls);
     }
 
-    private static Method reflectValidateMethod(Class<?> cls) throws NoSuchMethodException {
-        return Objects.requireNonNull(cls.getMethod("validate", long.class, Class.class));
+    private static Method reflectSelfRefMethod(Class<?> cls) throws NoSuchMethodException {
+        return Objects.requireNonNull(cls.getMethod("selfRef", Map.class));
     }
 
     @SuppressWarnings("unused")
-    static abstract class Resource<StatusT> {
+    static abstract class Ref<@A1 A, @A2 B> {
     }
 
-    static class ProjectValidator {
+    static class SelfReferential {
         @SuppressWarnings("unused")
-        public <T extends Resource<T>> void validate(long id, Class<T> klass) {
+        public <@A3 T extends Ref<@A4 T, @A5 T>> void selfRef(Map<@A6 T, @A7 T> map) {
             throw new UnsupportedOperationException("Just for testing");
         }
     }

@@ -27,9 +27,16 @@ class AnnotatedTypeVariableImpl extends AnnotatedTypeImpl implements AnnotatedTy
         this.annotatedBounds = annotatedBounds;
     }
 
-    void init(AnnotatedType[] annotatedBounds) {
-        this.type = new TypeVariableImpl<>((TypeVariable<?>) this.type, this.getAnnotations(), annotatedBounds);
+    AnnotatedTypeVariableImpl init(AnnotatedType[] annotatedBounds) {
+        this.type = new TypeVariableImpl<>((TypeVariable<?>) this.type, ((TypeVariable<?>) this.type).getAnnotations(), annotatedBounds);
         this.annotatedBounds = annotatedBounds;
+        return this;
+    }
+
+    AnnotatedTypeVariableImpl setAnnotations(Annotation[] annotations) {
+        this.type = new TypeVariableImpl<>((TypeVariable<?>) this.type, annotations, this.annotatedBounds);
+        this.annotations = toMap(annotations);
+        return this;
     }
 
     @Override

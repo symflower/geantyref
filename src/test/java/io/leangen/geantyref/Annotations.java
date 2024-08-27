@@ -33,4 +33,12 @@ public interface Annotations {
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.TYPE_USE, ElementType.TYPE_PARAMETER})
     @interface A5 {}
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.TYPE_USE, ElementType.TYPE_PARAMETER})
+    @interface A6 {}
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.TYPE_USE, ElementType.TYPE_PARAMETER})
+    @interface A7 {}
 }

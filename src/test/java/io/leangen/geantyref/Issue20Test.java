@@ -5,7 +5,7 @@
 
 package io.leangen.geantyref;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
@@ -13,17 +13,16 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 
-import static io.leangen.geantyref.Annotations.A1;
-import static io.leangen.geantyref.Annotations.A2;
-import static io.leangen.geantyref.Annotations.A3;
-import static io.leangen.geantyref.Annotations.A4;
-import static io.leangen.geantyref.Annotations.A5;
+import static io.leangen.geantyref.Annotations.*;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
- * <a href="https://github.com/leangen/geantyref/issues/20">Issue 20</a>
+ * <a href="https://github.com/leangen/geantyref/issues/20">reduceBounded StackOverflowError with self-recursing capture</a>
  */
-public class Issue20Test extends TestCase {
+public class Issue20Test {
 
     static class TestClass {
 
@@ -32,7 +31,8 @@ public class Issue20Test extends TestCase {
         }
     }
 
-    public void testRecursiveTypes() throws Exception {
+    @Test
+    public void reduceBoundedOnRecursiveTypes() throws Exception {
         AnnotatedType type = GenericTypeReflector.reduceBounded(
                 GenericTypeReflector.getExactReturnType(TestClass.class.getMethod("returnType"),
                         GenericTypeReflector.annotate(TestClass.class)));
@@ -80,7 +80,8 @@ public class Issue20Test extends TestCase {
         }
     }
 
-    public void testRecursiveTypes2() throws Exception {
+    @Test
+    public void reduceBoundedOnRecursiveTypes2() throws Exception {
         AnnotatedType type = GenericTypeReflector.reduceBounded(
                 GenericTypeReflector.getExactReturnType(TestClass2.class.getMethod("returnType"),
                         GenericTypeReflector.annotate(TestClass2.class)));
@@ -109,7 +110,8 @@ public class Issue20Test extends TestCase {
         }
     }
 
-    public void testRecursiveTypes3() throws Exception {
+    @Test
+    public void reduceBoundedOnRecursiveTypes3() throws Exception {
         AnnotatedType type = GenericTypeReflector.reduceBounded(GenericTypeReflector.annotate(
                 GenericTypeReflector.getExactReturnType(TestClass3.class.getMethod("returnType"),
                         TestClass3.class)));

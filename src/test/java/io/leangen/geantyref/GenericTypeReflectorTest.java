@@ -5,35 +5,18 @@
 
 package io.leangen.geantyref;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedArrayType;
-import java.lang.reflect.AnnotatedParameterizedType;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.lang.reflect.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
-import static io.leangen.geantyref.Annotations.A1;
-import static io.leangen.geantyref.Annotations.A2;
-import static io.leangen.geantyref.Annotations.A3;
-import static io.leangen.geantyref.Annotations.A4;
-import static io.leangen.geantyref.Annotations.A5;
+import static io.leangen.geantyref.Annotations.*;
+import static io.leangen.geantyref.Assertions.assertAnnotationsPresent;
 import static io.leangen.geantyref.GenericTypeReflector.annotate;
 import static io.leangen.geantyref.GenericTypeReflector.getExactSubType;
 import static io.leangen.geantyref.GenericTypeReflector.resolveExactType;
 import static io.leangen.geantyref.GenericTypeReflector.resolveType;
-import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Test for reflection done in GenericTypeReflector.
@@ -237,11 +220,6 @@ public class GenericTypeReflectorTest extends AbstractGenericsReflectorTest {
         AnnotatedParameterizedType reduced = (AnnotatedParameterizedType) GenericTypeReflector.reduceBounded(t);
         assertEquals(Long.class, reduced.getAnnotatedActualTypeArguments()[0].getType());
         assertEquals(Long.class, reduced.getAnnotatedActualTypeArguments()[1].getType());
-    }
-
-    @SafeVarargs
-    private static void assertAnnotationsPresent(AnnotatedType type, Class<? extends Annotation>... annotations) {
-        assertArrayEquals(annotations, Arrays.stream(type.getAnnotations()).map(Annotation::annotationType).toArray());
     }
 
     private class N {}

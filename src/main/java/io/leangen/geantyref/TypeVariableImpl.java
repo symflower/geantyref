@@ -72,9 +72,9 @@ public class TypeVariableImpl<D extends GenericDeclaration> implements TypeVaria
         return annotations.values().toArray(new Annotation[0]);
     }
 
-    //should this maybe return only annotations directly on the variable?
     @Override
     public Annotation[] getDeclaredAnnotations() {
+        //#IMPLTNOTE1 variable.getAnnotations()
         return getAnnotations();
     }
 

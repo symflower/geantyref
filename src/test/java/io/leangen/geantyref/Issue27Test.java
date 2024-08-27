@@ -30,7 +30,6 @@ public class Issue27Test {
         AnnotatedTypeVariable keyType = (AnnotatedTypeVariable) mapType.getAnnotatedActualTypeArguments()[0];
         AnnotatedTypeVariable valueType = (AnnotatedTypeVariable) mapType.getAnnotatedActualTypeArguments()[1];
         TypeVariable<Method> T = method.getTypeParameters()[0];
-        System.out.println(mapType.getType().getTypeName());
         assertEqualTypeVariables(T, keyType.getType());
         assertEqualTypeVariables(T, valueType.getType());
         assertAnnotationsPresent(keyType, A6.class, A3.class);

@@ -13,7 +13,6 @@ import java.util.*;
 
 import static io.leangen.geantyref.Annotations.*;
 import static io.leangen.geantyref.Assertions.assertAnnotationsPresent;
-import static io.leangen.geantyref.Assertions.assertEqualTypeVariables;
 import static io.leangen.geantyref.GenericTypeReflector.annotate;
 import static io.leangen.geantyref.GenericTypeReflector.getExactSubType;
 import static io.leangen.geantyref.GenericTypeReflector.resolveExactType;
@@ -196,7 +195,7 @@ public class GenericTypeReflectorTest extends AbstractGenericsReflectorTest {
         AnnotatedType value = ((AnnotatedParameterizedType) resolved).getAnnotatedActualTypeArguments()[1];
         assertEquals(String.class, key.getType());
         assertAnnotationsPresent(key, A1.class, A2.class);
-        assertEqualTypeVariables(W.class.getTypeParameters()[0], value.getType());
+        assertEquals(W.class.getTypeParameters()[0], value.getType());
         assertAnnotationsPresent(value, A1.class, A3.class);
     }
 

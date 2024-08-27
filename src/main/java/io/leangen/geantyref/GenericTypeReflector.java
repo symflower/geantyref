@@ -944,10 +944,12 @@ public class GenericTypeReflector {
                     ((AnnotatedWildcardType) original).getAnnotatedUpperBounds());
         }
         //Type variables can be recursive (self-referential), so instances must be mutated
+        //#IMPLTNOTE1 setAnnotations can already take care of replacing the underlying variable as well
         if (original instanceof AnnotatedTypeVariableImpl) {
             return (T) ((AnnotatedTypeVariableImpl) original).setAnnotations(annotations);
         }
         if (original instanceof AnnotatedTypeVariable) {
+            //#IMPLTNOTE1 Replace the underlying variable as well
             return (T) new AnnotatedTypeVariableImpl((TypeVariable<?>) original.getType(), annotations);
         }
         if (original instanceof AnnotatedArrayType) {

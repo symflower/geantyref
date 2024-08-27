@@ -105,10 +105,8 @@ class VarMap {
                     throw new UnresolvedTypeVariableException(tv);
                 }
             }
-            //DO NOT FLIP tv::equals
-            //Recursive type variable have to be mutated (see Issue 27), and for that they have to replaced with GeantyRef's impl
-            //and those instances are only equal to JVM's instances in one direction
-            TypeVariable varFromClass = map.keySet().stream().filter(tv::equals).findFirst().get();
+            //#IMPLTNOTE1 Flip key.equals(tv), as the equality check will fail if the underlying variable is replaced
+            TypeVariable varFromClass = map.keySet().stream().filter(key -> key.equals(tv)).findFirst().get();
             Annotation[] merged = merge(type.getAnnotations(), tv.getAnnotations(), map.get(tv).getAnnotations(), varFromClass.getAnnotations());
             return updateAnnotations(map.get(tv), merged);
         } else if (type instanceof AnnotatedParameterizedType) {

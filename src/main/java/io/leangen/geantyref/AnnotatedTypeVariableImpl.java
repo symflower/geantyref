@@ -10,6 +10,11 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.AnnotatedTypeVariable;
 import java.lang.reflect.TypeVariable;
 
+/*Implementation note #IMPLTNOTE1:
+* Currently the principle everywhere is not to replace the underlying variable unless the bounds are being resolved.
+* The annotations are never replaced on the TypeVariable itself. Not even when replacing the bounds.
+* Find all places with #IMPLTNOTE1 if this principle changes.
+*/
 class AnnotatedTypeVariableImpl extends AnnotatedTypeImpl implements AnnotatedTypeVariable {
 
     private AnnotatedType[] annotatedBounds;
@@ -28,13 +33,13 @@ class AnnotatedTypeVariableImpl extends AnnotatedTypeImpl implements AnnotatedTy
     }
 
     AnnotatedTypeVariableImpl init(AnnotatedType[] annotatedBounds) {
-        this.type = new TypeVariableImpl<>((TypeVariable<?>) this.type, ((TypeVariable<?>) this.type).getAnnotations(), annotatedBounds);
+        this.type = new TypeVariableImpl<>((TypeVariable<?>) this.type, /*#IMPLTNOTE1 this.getAnnotations(),*/ annotatedBounds);
         this.annotatedBounds = annotatedBounds;
         return this;
     }
 
     AnnotatedTypeVariableImpl setAnnotations(Annotation[] annotations) {
-        this.type = new TypeVariableImpl<>((TypeVariable<?>) this.type, annotations, this.annotatedBounds);
+        //#IMPLTNOTE1 this.type = new TypeVariableImpl<>((TypeVariable<?>) this.type, annotations, this.annotatedBounds);
         this.annotations = toMap(annotations);
         return this;
     }

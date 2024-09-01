@@ -16,6 +16,8 @@ import java.util.RandomAccess;
 
 import static org.junit.Assert.assertNotEquals;
 
+//NOTE: It is important NOT to use <> (diamond) here! Something goes horribly wrong with type inference.
+@SuppressWarnings("Convert2Diamond")
 public abstract class AbstractGenericsReflectorTest extends TestCase {
     /**
      * A constant that's false, to use in an if() block for code that's only there to show that it

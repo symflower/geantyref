@@ -5,10 +5,8 @@
 
 package io.leangen.geantyref;
 
-import java.awt.*;
 import java.io.Serializable;
 import java.lang.reflect.*;
-import java.util.List;
 import java.util.*;
 
 import static io.leangen.geantyref.Annotations.*;
@@ -28,7 +26,6 @@ public class GenericTypeReflectorTest extends AbstractGenericsReflectorTest {
     }
 
     public void testGetTypeParameter() {
-        @SuppressWarnings("serial")
         class StringList extends ArrayList<String> {
         }
         assertEquals(String.class, GenericTypeReflector.getTypeParameter(StringList.class, Collection.class.getTypeParameters()[0]));
@@ -62,10 +59,19 @@ public class GenericTypeReflectorTest extends AbstractGenericsReflectorTest {
     /**
      * Same as {@link #testGetExactReturnTypeIllegalArgument()} for getExactFieldType
      */
-    public void testGetExactFieldTypeIllegalArgument() throws SecurityException, NoSuchFieldException {
-        Field field = Dimension.class.getField("width");
+    public void testGetExactFieldTypeShadowedFieldIllegalArgument() throws SecurityException, NoSuchFieldException {
+        Field field = GummyWorm.class.getField("size");
         try {
-            GenericTypeReflector.getExactFieldType(field, List.class);
+            GenericTypeReflector.getExactFieldType(field, Gummy.class);
+            fail("expected exception");
+        } catch (IllegalArgumentException e) { // expected
+        }
+    }
+
+    public void testGetExactFieldTypeIllegalArgument() throws SecurityException, NoSuchFieldException {
+        Field field = Pen.class.getField("size");
+        try {
+            GenericTypeReflector.getExactFieldType(field, GummyWorm.class);
             fail("expected exception");
         } catch (IllegalArgumentException e) { // expected
         }
@@ -222,6 +228,48 @@ public class GenericTypeReflectorTest extends AbstractGenericsReflectorTest {
         assertEquals(Long.class, reduced.getAnnotatedActualTypeArguments()[1].getType());
     }
 
+    public void testOwnerTypeResolution() throws NoSuchMethodException {
+        AnnotatedType type = new TypeToken<Box<@A4 Integer>.Lock<@A5 Double>>() {}.getAnnotatedType();
+        Method echo = Box.Lock.class.getDeclaredMethod("echo");
+        AnnotatedType exactReturnType = GenericTypeReflector.getExactReturnType(echo, type);
+        assertTrue(exactReturnType instanceof AnnotatedParameterizedType);
+        AnnotatedParameterizedType parameterized = (AnnotatedParameterizedType) exactReturnType;
+        assertEquals(Integer.class, parameterized.getAnnotatedActualTypeArguments()[0].getType());
+        assertAnnotationsPresent(parameterized.getAnnotatedActualTypeArguments()[0], A4.class, A1.class, A2.class);
+        AnnotatedParameterizedType owner = (AnnotatedParameterizedType) parameterized.getAnnotatedOwnerType();
+        assertEquals(Integer.class, owner.getAnnotatedActualTypeArguments()[0].getType());
+        assertAnnotationsPresent(owner.getAnnotatedActualTypeArguments()[0], A4.class, A1.class);
+    }
+
+    public void testOwnerTypeResolution2() throws NoSuchMethodException {
+        AnnotatedType type = new TypeToken<Box<@A4 Integer>.Lock<@A5 Double>>() {}.getAnnotatedType();
+        Method echo = Box.Lock.class.getDeclaredMethod("echo2");
+        AnnotatedType exactReturnType = GenericTypeReflector.getExactReturnType(echo, type);
+        assertTrue(exactReturnType instanceof AnnotatedParameterizedType);
+        AnnotatedParameterizedType parameterized = (AnnotatedParameterizedType) exactReturnType;
+        assertEquals(Double.class, parameterized.getAnnotatedActualTypeArguments()[0].getType());
+        assertAnnotationsPresent(parameterized.getAnnotatedActualTypeArguments()[0], A5.class, A2.class);
+        AnnotatedParameterizedType owner = (AnnotatedParameterizedType) parameterized.getAnnotatedOwnerType();
+        assertEquals(Integer.class, owner.getAnnotatedActualTypeArguments()[0].getType());
+        assertAnnotationsPresent(owner.getAnnotatedActualTypeArguments()[0], A4.class, A1.class);
+    }
+
+    public void testOwnerTypeResolution3() throws NoSuchMethodException {
+        AnnotatedType type = new TypeToken<Box<@A4 Integer>.Shackle>() {}.getAnnotatedType();
+        Method echo = Box.Shackle.class.getDeclaredMethod("echo2");
+        AnnotatedType exactReturnType = GenericTypeReflector.resolveExactType(echo.getAnnotatedReturnType(), type);
+        System.out.println(exactReturnType);
+        assertTrue(exactReturnType instanceof AnnotatedParameterizedType);
+        AnnotatedParameterizedType parameterized = (AnnotatedParameterizedType) exactReturnType;
+        //Only parameterized because its owner is. No actual parameters of its own.
+        assertEquals(0, parameterized.getAnnotatedActualTypeArguments().length);
+        assertEquals(Box.Shackle.class, GenericTypeReflector.erase(parameterized.getType()));
+        AnnotatedParameterizedType annotatedOwnerType = (AnnotatedParameterizedType) parameterized.getAnnotatedOwnerType();
+        assertEquals(Box.class, GenericTypeReflector.erase(annotatedOwnerType.getType()));
+        assertEquals(Integer.class, annotatedOwnerType.getAnnotatedActualTypeArguments()[0].getType());
+        assertAnnotationsPresent(annotatedOwnerType.getAnnotatedActualTypeArguments()[0], A4.class, A1.class);
+    }
+
     private class N {}
     private class P<S, K> extends N {}
     private class L<S, K> extends P<List<K>, List<Map<K, S>>> {}
@@ -243,4 +291,30 @@ public class GenericTypeReflectorTest extends AbstractGenericsReflectorTest {
     private static AnnotatedType t2 = new TypeToken<@A5 Optional<@A4 Map<@A2 String, @A3 Integer @A1 []>>>(){}.getAnnotatedType();
 
     private class Outer { @A1 class Inner { @A2 class Innermost {}}}
+
+    public static class Pen {
+        public int size;
+    }
+    public static class Gummy {
+        public int size;
+    }
+    public static class GummyWorm extends Gummy {
+        public int size;
+    }
+
+    class Box<@A1 T> {
+        class Lock<@A2 S> {
+            Lock<T> echo() {
+                return null;
+            }
+            Lock<S> echo2() {
+                return null;
+            }
+        }
+        class Shackle extends Lock<Double> {
+            Shackle echo2() {
+                return this;
+            }
+        }
+    }
 }

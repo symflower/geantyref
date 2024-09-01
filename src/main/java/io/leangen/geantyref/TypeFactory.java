@@ -50,7 +50,7 @@ public class TypeFactory {
     }
 
     public static AnnotatedType parameterizedAnnotatedClass(Class<?> clazz, Annotation[] annotations, AnnotatedType... arguments) {
-        return parameterizedAnnotatedInnerClass(null, clazz, annotations, arguments);
+        return parameterizedAnnotatedInnerClass((AnnotatedType) null, clazz, annotations, arguments);
     }
 
     public static AnnotatedType annotatedInnerClass(Type owner, Class<?> clazz, Annotation[] annotations) {
@@ -58,11 +58,17 @@ public class TypeFactory {
     }
 
     public static AnnotatedType parameterizedAnnotatedInnerClass(Type owner, Class<?> clazz, Annotation[] annotations, AnnotatedType... arguments) {
+        AnnotatedType ownerType = owner != null ? GenericTypeReflector.annotate(owner) : null;
+        return parameterizedAnnotatedInnerClass(ownerType, clazz, annotations, arguments);
+    }
+
+    public static AnnotatedType parameterizedAnnotatedInnerClass(AnnotatedType owner, Class<?> clazz, Annotation[] annotations, AnnotatedType... arguments) {
         if (arguments == null || arguments.length == 0) {
             return GenericTypeReflector.annotate(clazz, annotations);
         }
         Type[] typeArguments = Arrays.stream(arguments).map(AnnotatedType::getType).toArray(Type[]::new);
-        return new AnnotatedParameterizedTypeImpl((ParameterizedType) parameterizedInnerClass(owner, clazz, typeArguments), annotations, arguments);
+        Type innerOwner = owner != null ? owner.getType() : null;
+        return new AnnotatedParameterizedTypeImpl((ParameterizedType) parameterizedInnerClass(innerOwner, clazz, typeArguments), annotations, arguments, owner);
     }
 
     public static AnnotatedParameterizedType parameterizedAnnotatedType(ParameterizedType type, Annotation[] typeAnnotations, Annotation[]... argumentAnnotations) {

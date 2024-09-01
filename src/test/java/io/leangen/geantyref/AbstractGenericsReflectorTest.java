@@ -5,20 +5,16 @@
 
 package io.leangen.geantyref;
 
-import static org.junit.Assert.assertNotEquals;
-
 import junit.framework.TestCase;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.RandomAccess;
+
+import static org.junit.Assert.assertNotEquals;
 
 public abstract class AbstractGenericsReflectorTest extends TestCase {
     /**
@@ -100,7 +96,7 @@ public abstract class AbstractGenericsReflectorTest extends TestCase {
      * Tests that the types given are not equal, but they are eachother's supertype.
      */
     private <T> void checkedTestMutualSupertypes(TypeToken<T> type1, TypeToken<T> type2) {
-        assertFalse(type1.equals(type2));
+        assertNotEquals(type1, type2);
         assertTrue(isSupertype(type1, type2));
         assertTrue(isSupertype(type2, type1));
     }

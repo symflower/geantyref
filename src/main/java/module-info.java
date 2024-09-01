@@ -4,9 +4,8 @@
  */
 
 /**
- * GenTyRef - Type reflection library for Java
+ * GeantyRef - Type reflection library for Java
  */
 module io.leangen.geantyref {
-    requires static java.desktop;
     exports io.leangen.geantyref;
 }

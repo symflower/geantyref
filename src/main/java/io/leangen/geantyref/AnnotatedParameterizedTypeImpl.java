@@ -16,9 +16,10 @@ class AnnotatedParameterizedTypeImpl extends AnnotatedTypeImpl implements Annota
 
     private final AnnotatedType[] typeArguments;
 
-    AnnotatedParameterizedTypeImpl(ParameterizedType rawType, Annotation[] annotations, AnnotatedType[] typeArguments) {
+    AnnotatedParameterizedTypeImpl(ParameterizedType rawType, Annotation[] annotations, AnnotatedType[] typeArguments, AnnotatedType ownerType) {
         super(rawType, annotations);
         this.typeArguments = typeArguments;
+        this.ownerType = ownerType;
     }
 
     @Override
@@ -46,8 +47,8 @@ class AnnotatedParameterizedTypeImpl extends AnnotatedTypeImpl implements Annota
         String rawName = GenericTypeReflector.getTypeName(rawType.getRawType());
 
         StringBuilder typeName = new StringBuilder();
-        if (rawType.getOwnerType() != null) {
-            typeName.append(GenericTypeReflector.getTypeName(rawType.getOwnerType())).append('$');
+        if (ownerType != null) {
+            typeName.append(ownerType).append('$');
 
             String prefix = (rawType.getOwnerType() instanceof ParameterizedType) ? ((Class<?>) ((ParameterizedType) rawType.getOwnerType()).getRawType()).getName() + '$'
                     : ((Class<?>) rawType.getOwnerType()).getName() + '$';
@@ -55,11 +56,6 @@ class AnnotatedParameterizedTypeImpl extends AnnotatedTypeImpl implements Annota
                 rawName = rawName.substring(prefix.length());
         }
         typeName.append(rawName);
-        return annotationsString() + typeName + "<" + typesString(typeArguments) + ">";
-    }
-
-    @Override
-    public AnnotatedType getAnnotatedOwnerType() {
-        return null;
+        return annotationsString() + typeName + (typeArguments != null && typeArguments.length > 0 ? "<" + typesString(typeArguments) + ">" : "");
     }
 }

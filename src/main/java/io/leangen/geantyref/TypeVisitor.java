@@ -25,8 +25,12 @@ public abstract class TypeVisitor {
 		AnnotatedType[] params = Arrays.stream(type.getAnnotatedActualTypeArguments())
 				.map(param -> transform(param, this))
 				.toArray(AnnotatedType[]::new);
+		AnnotatedType owner = type.getAnnotatedOwnerType();
+		if (owner != null) {
+			owner = transform(owner, this);
+		}
 
-		return GenericTypeReflector.replaceParameters(type, params);
+		return GenericTypeReflector.replaceParameters(type, params, owner);
 	}
 
 	protected AnnotatedType visitWildcardType(AnnotatedWildcardType type) {

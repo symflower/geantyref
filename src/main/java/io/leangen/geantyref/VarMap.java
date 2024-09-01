@@ -7,7 +7,6 @@ package io.leangen.geantyref;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,8 +55,8 @@ class VarMap {
                 add(typeParameters[i], arguments[i]);
             }
 
-            Type owner = ((ParameterizedType) type.getType()).getOwnerType();
-            type = (owner instanceof ParameterizedType) ? (AnnotatedParameterizedType) annotate(owner) : null;
+            AnnotatedType owner = type.getAnnotatedOwnerType();
+            type = (owner instanceof AnnotatedParameterizedType) ? (AnnotatedParameterizedType) owner : null;
         } while (type != null);
     }
 
@@ -119,9 +118,9 @@ class VarMap {
                 typeParameters[i] = updateAnnotations(typeParameter, raw.getTypeParameters()[i].getAnnotations());
             }
             Type[] rawArgs = stream(typeParameters).map(AnnotatedType::getType).toArray(Type[]::new);
-            Type innerOwnerType = inner.getOwnerType() == null ? null : map(annotate(inner.getOwnerType()), mappingMode).getType();
-            ParameterizedType newInner = new ParameterizedTypeImpl((Class) inner.getRawType(), rawArgs, innerOwnerType);
-            return new AnnotatedParameterizedTypeImpl(newInner, merge(pType.getAnnotations(), raw.getAnnotations()), typeParameters);
+            AnnotatedType ownerType = pType.getAnnotatedOwnerType() == null ? null : map(pType.getAnnotatedOwnerType(), mappingMode);
+            ParameterizedType newInner = new ParameterizedTypeImpl((Class) inner.getRawType(), rawArgs, ownerType != null ? ownerType.getType() : null);
+            return new AnnotatedParameterizedTypeImpl(newInner, merge(pType.getAnnotations(), raw.getAnnotations()), typeParameters, ownerType);
         } else if (type instanceof AnnotatedWildcardType) {
             AnnotatedWildcardType wType = (AnnotatedWildcardType) type;
             AnnotatedType[] up = map(wType.getAnnotatedUpperBounds(), mappingMode);
@@ -154,8 +153,8 @@ class VarMap {
     }
 
     Type[] map(Type[] types) {
-        AnnotatedType[] result = map(Arrays.stream(types).map(GenericTypeReflector::annotate).toArray(AnnotatedType[]::new));
-        return Arrays.stream(result).map(AnnotatedType::getType).toArray(Type[]::new);
+        AnnotatedType[] result = map(stream(types).map(GenericTypeReflector::annotate).toArray(AnnotatedType[]::new));
+        return stream(result).map(AnnotatedType::getType).toArray(Type[]::new);
     }
 
     Type map(Type type) {

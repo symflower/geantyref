@@ -19,14 +19,20 @@ class AnnotatedTypeImpl implements AnnotatedType {
 
     protected Type type;
     protected Map<Class<? extends Annotation>, Annotation> annotations;
+    protected AnnotatedType ownerType;
 
     AnnotatedTypeImpl(Type type) {
-        this(type, new Annotation[0]);
+        this(type, new Annotation[0], null);
     }
 
     AnnotatedTypeImpl(Type type, Annotation[] annotations) {
+        this(type, annotations, null);
+    }
+
+    AnnotatedTypeImpl(Type type, Annotation[] annotations, AnnotatedType ownerType) {
         this.type = Objects.requireNonNull(type);
         this.annotations = toMap(annotations);
+        this.ownerType = ownerType;
     }
 
     @Override
@@ -49,6 +55,11 @@ class AnnotatedTypeImpl implements AnnotatedType {
     @Override
     public Annotation[] getDeclaredAnnotations() {
         return getAnnotations();
+    }
+
+    @Override
+    public AnnotatedType getAnnotatedOwnerType() {
+        return ownerType;
     }
 
     @Override

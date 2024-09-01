@@ -45,9 +45,4 @@ class AnnotatedArrayTypeImpl extends AnnotatedTypeImpl implements AnnotatedArray
     public String toString() {
         return componentType.toString() + " " + annotationsString() + "[]";
     }
-
-    @Override
-    public AnnotatedType getAnnotatedOwnerType() {
-        return null;
-    }
 }

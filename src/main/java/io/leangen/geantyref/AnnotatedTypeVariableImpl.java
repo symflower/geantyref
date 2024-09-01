@@ -24,7 +24,7 @@ class AnnotatedTypeVariableImpl extends AnnotatedTypeImpl implements AnnotatedTy
     }
 
     AnnotatedTypeVariableImpl(TypeVariable<?> type, Annotation[] annotations) {
-        super(type, annotations);
+        super(type, annotations, null);
         AnnotatedType[] annotatedBounds =  type.getAnnotatedBounds();
         if (annotatedBounds == null || annotatedBounds.length == 0) {
             annotatedBounds = new AnnotatedType[0];
@@ -57,10 +57,5 @@ class AnnotatedTypeVariableImpl extends AnnotatedTypeImpl implements AnnotatedTy
     @Override
     public String toString() {
         return annotationsString() + ((TypeVariable<?>) type).getName();
-    }
-
-    @Override
-    public AnnotatedType getAnnotatedOwnerType() {
-        return null;
     }
 }

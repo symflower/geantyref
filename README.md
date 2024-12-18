@@ -1,5 +1,10 @@
 # GeantyRef
 
+## Migrate to JUnit 5 with Symflower
+
+Execution time: 1.2s
+Diff: 11 files changed, 56 insertions(+), 44 deletions(-)
+
 [![Maven Central](https://img.shields.io/maven-central/v/io.leangen.geantyref/geantyref?color=green&style=flat-square)](https://maven-badges.herokuapp.com/maven-central/io.leangen.geantyref/geantyref)
 [![Javadoc](https://img.shields.io/badge/dynamic/json.svg?style=flat-square&prefix=v&color=green&label=javadoc&query=$.response.docs[0].latestVersion&uri=http%3A%2F%2Fsearch.maven.org%2Fsolrsearch%2Fselect%3Fq%3Dg%3A%2522io.leangen.geantyref%2522%2BAND%2Ba%3A%2522geantyref%2522%26wt%3Djson)](http://www.javadoc.io/doc/io.leangen.geantyref/geantyref)
 [![Build Status](https://img.shields.io/travis/leangen/geantyref?style=flat-square)](https://travis-ci.org/leangen/geantyref)
@@ -9,27 +14,27 @@ A fork of the excellent [GenTyRef](https://code.google.com/archive/p/gentyref/) 
 
 **Table of Contents**
 
-- [GeantyRef](#)
-	- [Goal](#goal)
-	- [Overview](#overview)
-	- [Usage](#usage)
-		- [Maven](#maven)
-		- [Other build tools](#other-build-tools)
-	- [Examples](#examples)
-		- [Getting the exact return type of a method](#getting-the-exact-return-type-of-a-method)
-		- [Getting the exact type of a field](#getting-the-exact-type-of-a-field)
-		- [Getting the exact types of method parameters](#getting-the-exact-types-of-method-parameters)
-		- [Getting the exact super type](#getting-the-exact-super-type)
-		- [Getting the exact sub type](#getting-the-exact-sub-type)
-		- [Getting annotated return/parameter/field/sub/super types](#getting-annotated-returnparameterfieldsubsuper-types)
-		- [Creating type literals using TypeToken](#creating-type-literals-using-typetoken)
-		- [Creating annotated type literals using TypeToken](#creating-annotated-type-literals-using-typetoken)
-		- [Creating types dynamically using TypeFactory](#creating-types-dynamically-using-typefactory)
-		- [Creating annotated types dynamically using TypeFactory](#creating-annotated-types-dynamically-using-typefactory)
-		- [Turning any Type into an AnnotatedType](#turning-any-type-into-an-annotatedtype)
-		- [More](#more)
-	- [Wiki](#wiki)
-	- [License](#license)
+-   [GeantyRef](#)
+    -   [Goal](#goal)
+    -   [Overview](#overview)
+    -   [Usage](#usage)
+        -   [Maven](#maven)
+        -   [Other build tools](#other-build-tools)
+    -   [Examples](#examples)
+        -   [Getting the exact return type of a method](#getting-the-exact-return-type-of-a-method)
+        -   [Getting the exact type of a field](#getting-the-exact-type-of-a-field)
+        -   [Getting the exact types of method parameters](#getting-the-exact-types-of-method-parameters)
+        -   [Getting the exact super type](#getting-the-exact-super-type)
+        -   [Getting the exact sub type](#getting-the-exact-sub-type)
+        -   [Getting annotated return/parameter/field/sub/super types](#getting-annotated-returnparameterfieldsubsuper-types)
+        -   [Creating type literals using TypeToken](#creating-type-literals-using-typetoken)
+        -   [Creating annotated type literals using TypeToken](#creating-annotated-type-literals-using-typetoken)
+        -   [Creating types dynamically using TypeFactory](#creating-types-dynamically-using-typefactory)
+        -   [Creating annotated types dynamically using TypeFactory](#creating-annotated-types-dynamically-using-typefactory)
+        -   [Turning any Type into an AnnotatedType](#turning-any-type-into-an-annotatedtype)
+        -   [More](#more)
+    -   [Wiki](#wiki)
+    -   [License](#license)
 
 ## Goal
 
@@ -40,9 +45,9 @@ This library aims to provide a simple way to analyse generic type information an
 
 All functionality of the library is exposed via a handful of classes:
 
-* `GenericTypeReflector` : contains static methods used for generic type analysis
-* `TypeFactory` : contains static methods used for `Type/AnnotatedType` instance creation
-* `TypeToken` : Used to create `Type/AnnotatedType` literals (using [THC pattern](http://gafter.blogspot.com/2006/12/super-type-tokens.html))
+-   `GenericTypeReflector` : contains static methods used for generic type analysis
+-   `TypeFactory` : contains static methods used for `Type/AnnotatedType` instance creation
+-   `TypeToken` : Used to create `Type/AnnotatedType` literals (using [THC pattern](http://gafter.blogspot.com/2006/12/super-type-tokens.html))
 
 ## Usage
 
@@ -71,7 +76,9 @@ class StringList extends ArrayList<String> {
     ...
 }
 ```
+
 Getting the exact return type of `StringList`'s `get` method is rather difficult:
+
 ```java
 Method get = StringList.class.getMethod("get", int.class);
 get.getGenericReturnType() //yields T, which is not very useful information
@@ -91,6 +98,7 @@ class Container<T> {
 
 class NumberContainer extends Container<Number> {}
 ```
+
 We again face issues when trying to discover the exact type of the `item` field:
 
 ```java
@@ -117,6 +125,7 @@ class NumberContainer<T extends Number> extends Container<T> {}
 
 class LongContainer extends NumberContainer<Long> {}
 ```
+
 If we'd call `LongContainer.class.getGenericSuperclass()` it would correctly return `NumberContainer<Long>`
 but getting from there to `Container<Long>` is much more difficult, as there's no direct way.
 
@@ -135,12 +144,12 @@ This is rather difficult to calculate using standard reflection, but if we alrea
 `GenericTypeReflector.getExactSubType(listOfString, ArrayList.class)` to get `ArrayList<String>`
 
 Still, how to get to `listOfString`? Probably by calling one of the methods described above.
-But, it's also possible to create a type literal directly via `TypeToken`, or construct the desired 
+But, it's also possible to create a type literal directly via `TypeToken`, or construct the desired
 `Type` (`List<String>`) dynamically using `TypeFactory`.
 
 ### Getting annotated return/parameter/field/sub/super types
 
-It is worth noting that all the basic methods on the `GenericTypeReflector` listed above have 
+It is worth noting that all the basic methods on the `GenericTypeReflector` listed above have
 overloads that work with `AnnotatedType`s.
 
 ```java
@@ -155,6 +164,7 @@ Method get = List.class.getMethod("get", int.class);
 //returns an AnnotatedType representing: @NonNull String
 AnnotatedType nonNullString = GenericTypeReflector.getExactReturnType(get, listOfNonNullStrings);
 ```
+
 Similarly, `getExactFieldType`, `getExactParameterTypes`, `getExactSuperType`, `getExactSubType`
 work with `AnnotatedType`s.
 
@@ -214,9 +224,11 @@ Map<String, Object> annotationParameters = new HashMap<>();
 annotationParameters.put("name", "someName");
 MyAnnotation myAnnotation = TypeFactory.annotation(MyAnnotation.class, annotationParameters);
 ```
+
 This produces an `Annotation` instance as if `@MyAnnotation(name = "someName")` was found in the sources.
 
 Armed with this knowledge, it's easy to produce an `AnnotatedType`:
+
 ```java
 Class<List> listType = List.class;
 Class<String> typeParameter = String.class;
@@ -266,4 +278,5 @@ feel free to explore a bit on your own.
 More info can be found at the project [Wiki](https://github.com/leangen/geantyref/wiki).
 
 ## License
+
 [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0)

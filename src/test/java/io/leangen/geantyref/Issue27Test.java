@@ -6,7 +6,7 @@
 package io.leangen.geantyref;
 
 import io.leangen.geantyref.Annotations.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.*;
 import java.util.Map;
@@ -15,6 +15,7 @@ import java.util.Objects;
 import static io.leangen.geantyref.Assertions.assertAnnotationsPresent;
 import static io.leangen.geantyref.Assertions.assertEqualTypeVariables;
 import static io.leangen.geantyref.Assertions.assertTypeIsRecursive;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * <a href="https://github.com/leangen/geantyref/issues/27">StackOverflowError in VarMap.map when calling GenericTypeReflector.getParameterTypes()</a>
@@ -46,11 +47,13 @@ public class Issue27Test {
         }
     }
 
-    @Test(expected = UnresolvedTypeVariableException.class)
+    @Test
     public void getExactParameterTypesOnRecursiveType() throws NoSuchMethodException {
-        Class<?> cls = SelfReferential.class;
-        Method method = reflectSelfRefMethod(cls);
-        GenericTypeReflector.getExactParameterTypes(method, cls);
+        assertThrows(UnresolvedTypeVariableException.class, () -> {
+            Class<?> cls = SelfReferential.class;
+            Method method = reflectSelfRefMethod(cls);
+            GenericTypeReflector.getExactParameterTypes(method, cls);
+        });
     }
 
     private static Method reflectSelfRefMethod(Class<?> cls) throws NoSuchMethodException {

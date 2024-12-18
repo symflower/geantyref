@@ -1,6 +1,6 @@
 package io.leangen.geantyref;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +9,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AnnotationInvocationHandlerTest {
     @Test
@@ -25,15 +26,17 @@ public class AnnotationInvocationHandlerTest {
         assertThat(normalize, equalTo(values));
     }
 
-    @Test(expected = AnnotationFormatException.class)
+    @Test
     public void normalizeWithBadValues() throws Exception {
-        // Given
-        Map<String, Object> values = new HashMap<>();
-        values.put("aBoolean", "Some text");
-        values.put("anInt", 42);
+        assertThrows(AnnotationFormatException.class, () -> {
+            // Given
+            Map<String, Object> values = new HashMap<>();
+            values.put("aBoolean", "Some text");
+            values.put("anInt", 42);
 
-        // When
-        AnnotationInvocationHandler.normalize(MyAnnotation.class, unmodifiableMap(values));
+            // When
+            AnnotationInvocationHandler.normalize(MyAnnotation.class, unmodifiableMap(values));
+        });
     }
 
     @Test

@@ -8,9 +8,9 @@ import java.util.IdentityHashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Assertions {
 
@@ -33,7 +33,7 @@ public class Assertions {
                 .filter(arg -> arg instanceof AnnotatedTypeVariable)
                 .map(arg -> (AnnotatedTypeVariable) arg)
                 .collect(Collectors.toCollection(() -> Collections.newSetFromMap(new IdentityHashMap<>())));
-        assertTrue("Variable " + type + " does not recur within given depth", isRecursive(roots, type, 0, 10));
+        assertTrue(isRecursive(roots, type, 0, 10), "Variable " + type + " does not recur within given depth");
     }
 
     private static boolean isRecursive(Set<AnnotatedTypeVariable> roots, AnnotatedType node, int currentDepth, int maxDepth) {

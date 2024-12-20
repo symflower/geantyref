@@ -9,7 +9,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GenTyRefReflectionStrategy extends AbstractReflectionStrategy {
     public boolean isSupertype(Type superType, Type subType) {

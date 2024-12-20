@@ -1,5 +1,11 @@
 # GeantyRef
 
+## Migrate to JUnit 5 with Symflower
+
+* Symflower version: 44511
+* Execution time: 1.9s
+* Diff: 11 files changed, 56 insertions(+), 44 deletions(-)
+
 [![Maven Central](https://img.shields.io/maven-central/v/io.leangen.geantyref/geantyref?color=green&style=flat-square)](https://maven-badges.herokuapp.com/maven-central/io.leangen.geantyref/geantyref)
 [![Javadoc](https://img.shields.io/badge/dynamic/json.svg?style=flat-square&prefix=v&color=green&label=javadoc&query=$.response.docs[0].latestVersion&uri=http%3A%2F%2Fsearch.maven.org%2Fsolrsearch%2Fselect%3Fq%3Dg%3A%2522io.leangen.geantyref%2522%2BAND%2Ba%3A%2522geantyref%2522%26wt%3Djson)](http://www.javadoc.io/doc/io.leangen.geantyref/geantyref)
 [![Build Status](https://img.shields.io/travis/leangen/geantyref?style=flat-square)](https://travis-ci.org/leangen/geantyref)

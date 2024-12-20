@@ -5,7 +5,7 @@
 
 package io.leangen.geantyref;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
@@ -14,10 +14,10 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 
 import static io.leangen.geantyref.Annotations.*;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * <a href="https://github.com/leangen/geantyref/issues/20">reduceBounded StackOverflowError with self-recursing capture</a>

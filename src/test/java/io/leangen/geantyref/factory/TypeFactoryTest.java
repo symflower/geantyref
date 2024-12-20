@@ -20,8 +20,8 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 import static io.leangen.geantyref.TypeFactory.*;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class TypeFactoryTest extends TestCase {
     private static final Type GENERICOUTER_STRING = new TypeToken<GenericOuter<String>>() {

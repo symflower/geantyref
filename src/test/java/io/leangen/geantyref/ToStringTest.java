@@ -7,7 +7,7 @@ package io.leangen.geantyref;
 
 import io.leangen.geantyref.Annotations.A3;
 import io.leangen.geantyref.Annotations.A4;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -17,8 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ToStringTest {
 

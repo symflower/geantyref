@@ -5,7 +5,7 @@
 
 package io.leangen.geantyref;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedArrayType;
@@ -23,10 +23,10 @@ import static io.leangen.geantyref.Annotations.A2;
 import static io.leangen.geantyref.Annotations.A3;
 import static io.leangen.geantyref.Annotations.A4;
 import static io.leangen.geantyref.Annotations.A5;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests if type-use annotations from different locations are inherited and merged correctly.
@@ -105,7 +105,7 @@ public class AnnotationsMergeTest {
     public void classAnnotationsNonPropagationTest() {
         AnnotatedType number = GenericTypeReflector.getExactSuperType(A1_LONG, Number.class);
         assertNotNull(number);
-        assertTrue("Class annotations are not propagated upwards", number.getAnnotations().length == 0);
+        assertTrue(number.getAnnotations().length == 0, "Class annotations are not propagated upwards");
     }
 
     @Test

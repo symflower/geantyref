@@ -5,12 +5,12 @@
 
 package io.leangen.geantyref;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /*
  * https://github.com/leangen/geantyref/issues/17
@@ -23,9 +23,9 @@ public class Issue17Test {
         Method method = Issue17Test.class.getDeclaredMethod("dummyMethod", Set.class);
         TypeToken<?> otherTypeToken = TypeToken.get(method.getParameters()[0].getParameterizedType());
 
-        assertEquals("Both TypeTokens should be equal", numberTypeToken, otherTypeToken);
-        assertEquals("Both TypeTokens should have equal types", numberTypeToken.getType(), otherTypeToken.getType());
-        assertEquals("Both TypeTokens should have equal hash codes", numberTypeToken.hashCode(), otherTypeToken.hashCode());
+        assertEquals(numberTypeToken, otherTypeToken, "Both TypeTokens should be equal");
+        assertEquals(numberTypeToken.getType(), otherTypeToken.getType(), "Both TypeTokens should have equal types");
+        assertEquals(numberTypeToken.hashCode(), otherTypeToken.hashCode(), "Both TypeTokens should have equal hash codes");
     }
 
     @SuppressWarnings("unused")

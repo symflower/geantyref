@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.RandomAccess;
 
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 //NOTE: It is important NOT to use <> (diamond) here! Something goes horribly wrong with type inference.
 @SuppressWarnings("Convert2Diamond")
